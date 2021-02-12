@@ -42,7 +42,8 @@ export default {
             ipcRender.send('Window-min')
         },
         closeWin() {
-            ipcRender.send('close-Win')
+            // ipcRender.send('close_Win')
+            this.ipcRender.send('close_Win')
         }
     }
 }

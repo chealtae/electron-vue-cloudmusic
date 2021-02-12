@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron'
+import { ipcEventListener } from './moudles/ipcEvent'
 
 /**
  * Set `__static` path to static files in production
@@ -30,6 +31,9 @@ function createWindow () {
     mainWindow = null
   })
 }
+
+//初始化渲染进程消息监听
+ipcEventListener()
 
 app.on('ready', createWindow)
 
