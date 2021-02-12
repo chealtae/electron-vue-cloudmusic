@@ -1,5 +1,5 @@
 {
-  "name": "my-project",
+  "name": "cloud-music",
   "version": "0.0.1",
   "author": "chealtae <1402242918@qq.com>",
   "description": "An electron-vue project",
@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "my-project",
+    "productName": "cloud-music",
     "appId": "com.zhushenfeng.couldmusic",
     "directories": {
       "output": "build"

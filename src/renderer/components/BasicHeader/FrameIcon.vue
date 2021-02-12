@@ -66,6 +66,7 @@ export default {
 .icon_item{
     width: 23px;
     height: 23px;
+    cursor: pointer;
 }
 
 .icon_style{
