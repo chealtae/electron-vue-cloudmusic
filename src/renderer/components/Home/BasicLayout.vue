@@ -1,9 +1,19 @@
 <template>
-    <div class="basic_layout" style="-webkit-app-region: drag;">
+    <div class="basic_layout">
         <basicHeader></basicHeader>
         <div>
             {{message}}
         </div>
+        <div>
+            {{message}}
+        </div>
+        <div>
+            {{message}}
+        </div>
+        <div>
+            {{message}}
+        </div>
+        
     </div>
 </template>
 <script>
@@ -20,8 +30,15 @@ export default {
 }
 </script>
 <style>
-.basic_layout{
-    width: 100%;
-    height: 100%;
-}
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .basic_layout{
+        height: 100vh;
+        width: 100vw;
+    }
 </style>
