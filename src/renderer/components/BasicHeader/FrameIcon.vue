@@ -27,7 +27,6 @@ export default {
     },
     methods:{
         setMiniWin() {
-            console.log("1111111111111111111111111111111111111")
             ipcRenderer.send('Window-mini')
         },
         setMaxWin() {
@@ -43,6 +42,7 @@ export default {
         },
         closeWin() {
             ipcRenderer.send('close_Win')
+            console.log('消息发送成功')
         }
     }
 }

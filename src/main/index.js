@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { ipcEventListener } from './moudles/ipcEvent'
 
 /**
@@ -22,7 +22,11 @@ function createWindow () {
     height: 690,
     useContentSize: true,
     width: 1000,
-    frame: false
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true
+    },
+    movable: true//可否移动
   })
 
   mainWindow.loadURL(winURL)
