@@ -18,7 +18,7 @@
     </div>
 </template>
 <script>
-import {ipcRender} from 'electron'
+import {ipcRenderer} from 'electron'
 export default {
     data() {
         return {
@@ -28,22 +28,21 @@ export default {
     methods:{
         setMiniWin() {
             console.log("1111111111111111111111111111111111111")
-            ipcRender.send('Window-mini')
+            ipcRenderer.send('Window-mini')
         },
         setMaxWin() {
-            ipcRender.send('Window-max')
+            ipcRenderer.send('Window-max')
             this.isMax = true
         },
         lasttWinSize() {
-            ipcRender.send('Window-last') //恢复上一次窗口大小
+            ipcRenderer.send('Window-last') //恢复上一次窗口大小
             this.isMax = false
         },
         setMinWin() {
-            ipcRender.send('Window-min')
+            ipcRenderer.send('Window-min')
         },
         closeWin() {
-            // ipcRender.send('close_Win')
-            this.ipcRender.send('close_Win')
+            ipcRenderer.send('close_Win')
         }
     }
 }
