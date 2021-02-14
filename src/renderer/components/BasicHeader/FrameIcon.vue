@@ -27,18 +27,18 @@ export default {
     },
     methods:{
         setMiniWin() {
-            ipcRenderer.send('Window-mini')
+            ipcRenderer.send('Window_mini')
         },
         setMaxWin() {
-            ipcRenderer.send('Window-max')
+            ipcRenderer.send('Window_max')
             this.isMax = true
         },
         lasttWinSize() {
-            ipcRenderer.send('Window-last') //恢复上一次窗口大小
+            ipcRenderer.send('Window_last') //恢复上一次窗口大小
             this.isMax = false
         },
         setMinWin() {
-            ipcRenderer.send('Window-min')
+            ipcRenderer.send('Window_min')
         },
         closeWin() {
             ipcRenderer.send('close_Win')

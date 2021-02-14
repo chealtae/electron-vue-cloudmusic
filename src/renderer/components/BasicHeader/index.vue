@@ -35,7 +35,5 @@ export default {
 }
 </script>
 <style>
-#top_bar{
-    cursor: pointer;
-}
+
 </style>

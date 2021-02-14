@@ -26,7 +26,8 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true
     },
-    movable: true//可否移动
+    resizable: true,
+		movable: true//可否移动
   })
 
   mainWindow.loadURL(winURL)
