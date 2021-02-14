@@ -19,7 +19,7 @@ function closeWindows() {
 function minWindows() {
     ipcMain.on('Window_min', () => {
         console.log('窗口最小化成功')
-        let mainWin = BrowserWindow.getFocusedWindow();
+        let mainWin = BrowserWindow.getFocusedWindow(); //todo 由于窗口控制只有几个操作，所以暂时这么写，如果有特别多操作，应该封装成对象，使用constructor
         mainWin.minimize()
     })
 }
