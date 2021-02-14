@@ -4,8 +4,7 @@ import {
 	BrowserWindow
 } from 'electron'
 
-const mainWin = BrowserWindow.getFocusedWindow();
-
+var mainWin = BrowserWindow.getFocusedWindow();
 
 function closeWindows() {
     ipcMain.on('close_Win', () => {
@@ -20,14 +19,24 @@ function closeWindows() {
 function minWindows() {
     ipcMain.on('Window_min', () => {
         console.log('窗口最小化成功')
-        this.mainWin.minimize()
+        let mainWin = BrowserWindow.getFocusedWindow();
+        mainWin.minimize()
     })
 }
 
 function maxWindows() {
     ipcMain.on('Window_max', () => {
         console.log('窗口最大化成功')
-        this.mainWin.maximize()
+        let mainWin = BrowserWindow.getFocusedWindow();
+        mainWin.maximize()
+    })
+}
+
+function resetWindows() {
+    ipcMain.on('resetWin', () => {
+        console.log('窗口大小还原成功')
+        let mainWin = BrowserWindow.getFocusedWindow();
+        mainWin.restore()
     })
 }
 
@@ -36,6 +45,7 @@ function ipcEventListener() {
     closeWindows()
     minWindows()
     maxWindows()
+    resetWindows() 
 }
 export {
     ipcEventListener,

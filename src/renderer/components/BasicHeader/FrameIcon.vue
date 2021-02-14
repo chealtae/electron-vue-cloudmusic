@@ -9,7 +9,7 @@
         <div class="icon_item" v-show="!isMax" @click="setMaxWin">
             <div id="maxIcon"></div>
         </div>
-        <div class="icon_item" v-show="isMax" @click="lasttWinSize">
+        <div class="icon_item" v-show="isMax" @click="resetWin">
             <i class="el-icon-copy-document icon_style"></i>
         </div>
         <div class="icon_item">
@@ -33,8 +33,8 @@ export default {
             ipcRenderer.send('Window_max')
             this.isMax = true
         },
-        lasttWinSize() {
-            ipcRenderer.send('Window_last') //恢复上一次窗口大小
+        resetWin() {
+            ipcRenderer.send('resetWin') //恢复上一次窗口大小
             this.isMax = false
         },
         setMinWin() {
