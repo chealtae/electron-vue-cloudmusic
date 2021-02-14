@@ -51,7 +51,7 @@ export default {
 #icon_list{
     display: flex;
     justify-content: space-around;
-    width: 150px;
+    width: 145px;
 }
 
 #maxIcon{
