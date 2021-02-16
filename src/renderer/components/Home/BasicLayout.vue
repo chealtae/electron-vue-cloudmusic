@@ -7,7 +7,7 @@
             <div id="main_aside">
                 侧边栏
             </div>
-            <div id="mian_line_control">
+            <div id="main_line_control">
             </div>
             <div id="main_content">
                 主页内容
@@ -47,5 +47,13 @@ export default {
 
     #main {
         display: flex;
+        height: 80%;
+    }
+
+    #main_line_control{
+        background-color: rgba(64, 60, 60, 0.16);
+        display: inline-block;
+        width: 1px;
+        height: 100%;
     }
 </style>
