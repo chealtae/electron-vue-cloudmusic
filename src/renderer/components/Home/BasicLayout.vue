@@ -1,17 +1,20 @@
 <template>
     <div class="basic_layout">
-        <basicHeader></basicHeader>
-        <div>
-            {{message}}
+        <div id="header">
+            <basicHeader></basicHeader>
         </div>
-        <div>
-            {{message}}
+        <div id="main">
+            <div id="main_aside">
+                侧边栏
+            </div>
+            <div id="mian_line_control">
+            </div>
+            <div id="main_content">
+                主页内容
+            </div>
         </div>
-        <div>
-            {{message}}
-        </div>
-        <div>
-            {{message}}
+        <div id="footer">
+            播放器
         </div>
         
     </div>
@@ -40,5 +43,9 @@ export default {
     .basic_layout{
         height: 100vh;
         width: 100vw;
+    }
+
+    #main {
+        display: flex;
     }
 </style>
