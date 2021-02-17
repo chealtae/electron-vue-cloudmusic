@@ -15,6 +15,7 @@
         </div>
         <div id="footer">
             播放器
+            <play-bar></play-bar>
         </div>
         
     </div>
@@ -22,9 +23,12 @@
 <script>
 
 import basicHeader from '../BasicHeader/index'
+import PlayBar from '../PlayBar/playBar.vue'
 export default {
     components:{
         basicHeader,
+        PlayBar,
+        
     },
     data() {
         return {
