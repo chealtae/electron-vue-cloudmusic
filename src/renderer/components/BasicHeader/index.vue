@@ -15,14 +15,14 @@
             </div>
             <div class="meun_item">
                 <!-- <setting></setting> -->
-                <i class="el-icon-setting icon_style"></i>
+                <i class="el-icon-setting icon_style" ></i>
             </div>
             <div class="meun_item">
                 <!-- <theme-setting></theme-setting> -->
             </div>
             <div class="meun_item">
                 <!-- <message></message> -->
-                <i class="el-icon-message icon_style"></i>
+                <i class="el-icon-message icon_style" @click="createMessageWin"></i>
             </div>
         </div>
         <div class="icon_Line_style"></div>
@@ -32,10 +32,16 @@
     </div>
 </template>
 <script>
+import { ipcRenderer } from 'electron'
 import frameIcon from './FrameIcon'
 export default {
     components: {
         frameIcon,
+    },
+    methods: {
+        createMessageWin() {
+            ipcRenderer.send('createMessage')
+        }
     }
 }
 </script>

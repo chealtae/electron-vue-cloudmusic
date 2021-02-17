@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { ipcEventListener } from './moudles/ipcEvent'
-
+import { createWinListener} from './moudles/createWin'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -26,12 +26,13 @@ function createWindow () {
     minHeight: 670,
     frame: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
     },
     resizable: true,
 		movable: true//可否移动
-  })
 
+  })
+  mainWindow.webContents.closeDevTools()
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
@@ -41,6 +42,8 @@ function createWindow () {
 
 //初始化渲染进程消息监听
 ipcEventListener()
+//初始化创建子窗口消息监听
+createWinListener()
 
 app.on('ready', createWindow)
 

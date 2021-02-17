@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/Home/BasicLayout').default
     },
     {
+      path: '/message',
+      name: 'Message',
+      component: require('@/components/BasicHeader/Message').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

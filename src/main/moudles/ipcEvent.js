@@ -5,7 +5,7 @@ import {
 } from 'electron'
 
 var mainWin = BrowserWindow.getFocusedWindow();
-
+// 监听消息，控制主窗口的变化
 function closeWindows() {
     ipcMain.on('close_Win', () => {
         console.log('接收关闭窗口消息')
