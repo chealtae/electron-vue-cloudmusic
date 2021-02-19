@@ -2,9 +2,9 @@
 	<div class="player">
 		<div class="time">00:00</div>
 		<div class="silder">
-			<div class="buffer"></div>
-			<div class="processor"></div>
-			<div class="controller"></div>
+			<div class="buffer" :style="{width:`${bufferOffsetWidth}px`}"></div>
+			<div class="processor" :style="{width:`${processorOffsetWidth}px`}"></div>
+			<div class="controller" :style="{transform : `translateX(${progressbarTranslateX}px)`}"></div>
 			<!-- <img src="../../assets/img/loading.gif" class="progress-waiting" v-if="waiting"> -->
 		</div>
 		<div class="time">04:21</div>
@@ -12,7 +12,13 @@
 </template>
 <script>
 export default {
-    
+    data() {
+		return {
+			bufferOffsetWidth: 0,
+			processorOffsetWidth: 300,
+			controllerOffsetWidth: 0,
+		}
+	}
 }
 </script>
 <style>
@@ -37,25 +43,27 @@ export default {
 		height: 2px;
 		background-color: white;
 		margin:24px 5px 0px;
+		position: relative;
+		overflow: hidden;
 	}
 	.silder:hover{
 		transform: scale(1,2);
 	}
+	
 	.processor{
-		/* position: absolute;
-		width: 8px;
+		position: absolute;
 		height: 100%;
 		background-color: tomato;
 		border-top-right-radius: 6px;
-		border-bottom-right-radius: 6px; */
+		border-bottom-right-radius: 6px;
 	}
 	.controller{
-		/* position:absolute;
-		width: 6px;
-		height: 6px;
-		border: 10px solid tomato;
+		position:absolute;
+		width: 10px;
+		height: 5px;
+		background-color: tomato;
 		border-radius: 50%;
-		left: -8px;
-		top: -8px; */
+		top: -1px;
+		left: -1px;
 	}
 </style>
