@@ -1,76 +1,58 @@
 <template>
-  <div class="progress-bar" ref="progressBar" @click.prevent.stop="progressClick">
-    <div class="progress" ref="progress" :style="{width : `${progressOffsetWidth}px`}"></div>
-    <div class="buffered" ref="buffered" :style="{width : `${bufferedOffsetWidth}px`}"></div>
-    <div :class="handleCls" @mousedown="onMouseDown" :style="{transform : `translateX(${progressbarTranslateX}px)`}">
-      <img src="../../assets/img/loading.gif" class="progress-waiting" v-if="waiting">
-      <div class="progress-btn" v-else></div>
-    </div>
-    <div class="virtual-bar" ref="virtualBar"></div>
-  </div>
+	<div class="player">
+		<div class="time">00:00</div>
+		<div class="silder">
+			<div class="buffer"></div>
+			<div class="processor"></div>
+			<div class="controller"></div>
+			<!-- <img src="../../assets/img/loading.gif" class="progress-waiting" v-if="waiting"> -->
+		</div>
+		<div class="time">04:21</div>
+	</div>
 </template>
 <script>
 export default {
     
 }
 </script>
-<style >
-    .progress-bar {
-        position: relative;
-        width: 100%;
-        height: 4px;
-        border-radius: 2px;
-        background: rgba(123, 123, 123, 0.3);
-        cursor: pointer;
-    }
-    .virtual-bar {
-        position: absolute;
-        left: 0;
-        top: -4px;
-        right: 0;
-        bottom: -4px;
-        z-index: 2;
-    }
-    .progress {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 2;
-        height: 100%;
-        border-radius: 2px;
-    }
-    .buffered {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 1;
-        height: 100%;
-        background: rgba(123, 123, 123, 0.5);
-        transition: all .1s ease-out;
-    }
-    .handle {
-        position: absolute;
-        left: -10px;
-        top: 50%;
-        margin-top: -8px;
-        z-index: 3;
-        width: 20px;
-        height: 16px;
-        background: #fff;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        cursor: pointer;
-        box-sizing: border-box;
-    }
-    .small {
-        left: -7px;
-        margin-top: -7px;
-        width: 14px;
-        height: 14px;
-        border-radius: 7px;
-    }
-    .progress-btn {
-        top: 3px;
-        left: 3px;
-    }
+<style>
+    *{
+		margin: 0;
+		padding: 0;
+	}
+	.player{
+		width: 492px;
+		height: 45px;
+		background-color: #2d2d2d;
+		margin: auto;
+		position: relative;
+		display: flex;
+	}
+	.time{
+		margin-top: 19px;
+		font-size: 12px;
+	}
+	.silder{
+		width: 80%;
+		height: 10px;
+		background-color: white;
+		margin: 19px 5px;
+	}
+	.processor{
+		/* position: absolute;
+		width: 8px;
+		height: 100%;
+		background-color: tomato;
+		border-top-right-radius: 6px;
+		border-bottom-right-radius: 6px; */
+	}
+	.controller{
+		position:absolute;
+		width: 6px;
+		height: 6px;
+		border: 10px solid tomato;
+		border-radius: 50%;
+		left: -8px;
+		top: -8px;
+	}
 </style>
