@@ -23,7 +23,7 @@ export default {
 	.player{
 		width: 492px;
 		height: 45px;
-		background-color: #2d2d2d;
+		background-color: #777474;
 		margin: auto;
 		position: relative;
 		display: flex;
@@ -34,9 +34,12 @@ export default {
 	}
 	.silder{
 		width: 80%;
-		height: 10px;
+		height: 2px;
 		background-color: white;
-		margin: 19px 5px;
+		margin:24px 5px 0px;
+	}
+	.silder:hover{
+		transform: scale(1,2);
 	}
 	.processor{
 		/* position: absolute;
@@ -47,12 +50,12 @@ export default {
 		border-bottom-right-radius: 6px; */
 	}
 	.controller{
-		position:absolute;
+		/* position:absolute;
 		width: 6px;
 		height: 6px;
 		border: 10px solid tomato;
 		border-radius: 50%;
 		left: -8px;
-		top: -8px;
+		top: -8px; */
 	}
 </style>
