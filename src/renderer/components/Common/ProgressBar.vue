@@ -1,10 +1,10 @@
 <template>
 	<div class="player">
 		<div class="time">00:00</div>
-		<div class="silder" @click="onMousedown($event)">
+		<div class="silder" @click="onMousedown">
 			<div class="buffer" :style="{width:`${bufferOffsetWidth}px`}"></div>
 			<div class="processor"  :style="{width:`${processorOffsetWidth}px`}"></div>
-			<div class="controller"  :style="{transform : `translateX(${progressbarTranslateX}px)`}"></div>
+			<!-- <div class="controller"  :style="{transform : `translateX(${progressbarTranslateX}px)`}"></div> -->
 			<!-- <img src="../../assets/img/loading.gif" class="progress-waiting" v-if="waiting"> -->
 		</div>
 		<div class="time">04:21</div>
@@ -14,28 +14,21 @@
 export default {
     data() {
 		return {
-			processMoveX : 0, 
+			processMoveX : 300, 
 			bufferOffsetWidth: 0,
-			// processorOffsetWidth: 300,
 			controllerOffsetWidth: 0,
 		}
 	},
 	computed: {
 		processorOffsetWidth() {
-			let processorOffsetWidth = this.processMoveX 
-			console.log('processorOffsetWidth',processorOffsetWidth)
-			return processorOffsetWidth
+			return this.processMoveX
 		}
 	},
 	methods: {
-		onMousedown(el){
-			console.log('111111111')
-			let oDiv = el.currentTarget
-			oDiv.onmousedown = function(e) {
-				e.preventDefault();//禁用默认事件
-				this.processMoveX = e.offsetX
-				console.log('moveX',this.processMoveX)
-			}
+		onMousedown(e){
+			e.preventDefault
+			this.processMoveX = e.offsetX
+			console.log('moveX',this.processMoveX)
 		}
 	}
 }
