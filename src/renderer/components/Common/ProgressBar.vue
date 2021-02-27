@@ -4,24 +4,30 @@
 		<div class="silder" @click="onMousedown">
 			<div class="buffer" :style="{width:`${bufferOffsetWidth}px`}"></div>
 			<div class="processor"  :style="{width:`${processorOffsetWidth}px`}"></div>
-			<!-- <div class="controller"  :style="{transform : `translateX(${progressbarTranslateX}px)`}"></div> -->
+			<div class="controller"  v-drag='{}' 
+			:style="{transform : `translateX(${TranslateX}px)`, left:`${processorOffsetWidth}px`}"></div>
 			<!-- <img src="../../assets/img/loading.gif" class="progress-waiting" v-if="waiting"> -->
 		</div>
 		<div class="time">04:21</div>
 	</div>
 </template>
 <script>
+
 export default {
     data() {
 		return {
 			processMoveX : 300, 
 			bufferOffsetWidth: 0,
 			controllerOffsetWidth: 0,
+			progressbarTranslateX: 0,
 		}
 	},
 	computed: {
 		processorOffsetWidth() {
 			return this.processMoveX
+		},
+		TranslateX() {
+			return this.progressbarTranslateX
 		}
 	},
 	methods: {
@@ -30,6 +36,29 @@ export default {
 			this.processMoveX = e.offsetX
 			console.log('moveX',this.processMoveX)
 		}
+	},
+	directives:{
+		drag(el,bindling){
+			let oDiv = el //当前元素
+            oDiv.onmousedown = function(e) {
+				e.preventDefault //禁用默认事件
+				let disX = e.offsetX
+				console.log('offsetX',disX)
+				console.log(oDiv)
+				document.onmousemove = function(e){
+					e.preventDefault;
+					let l = e.offsetX - disX;
+					this.progressbarTranslateX = l
+					console.log('偏移',l)
+				}
+				document.onmouseup = function(e) {
+					e.preventDefault;
+					document.onmousemove = null;
+					document.onmousedown = null;
+				}
+			}
+		}
+		
 	}
 }
 </script>
@@ -56,7 +85,7 @@ export default {
 		background-color: white;
 		margin:24px 5px 0px;
 		position: relative;
-		overflow: hidden;
+
 	}
 	.silder:hover{
 		transform: scale(1,2);
