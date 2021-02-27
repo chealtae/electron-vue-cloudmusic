@@ -4,9 +4,7 @@
             <basicHeader></basicHeader>
         </div>
         <div id="main">
-            <div id="main_aside" :style="shrinkStyle">
-                侧边栏
-            </div>
+            <sider-index id="main_aside" :style="shrinkStyle"></sider-index>
             <div id="main_line_control"  v-drag='{set:set}' @mouseup="setOldWidthVal">
             </div>
             <div id="main_content">
@@ -23,12 +21,14 @@
 <script>
 
 import basicHeader from '../BasicHeader/index'
+import SiderIndex from '../BasicSider/siderIndex.vue'
 import PlayBar from '../PlayBar/playBar.vue'
+
 export default {
     components:{
         basicHeader,
         PlayBar,
-        
+        SiderIndex,
     },
     data() {
         return {
