@@ -8,7 +8,12 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: require('@/components/Home/BasicLayout').default
+      component: require('@/components/Home/FindMusic').default
+    },
+    {
+      path: '/musicVedio',
+      name: 'musicVedio',
+      component: require('@/components/Home/MusicVedio').default
     },
     {
       path: '/message',

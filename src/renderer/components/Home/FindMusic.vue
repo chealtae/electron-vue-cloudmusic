@@ -7,9 +7,7 @@
             <sider-index id="main_aside" :style="shrinkStyle"></sider-index>
             <div id="main_line_control"  v-drag='{set:set}' @mouseup="setOldWidthVal">
             </div>
-            <div id="main_content">
-                主页内容
-            </div>
+            <find-music></find-music>
         </div>
         <div id="footer">
             播放器
@@ -23,12 +21,14 @@
 import basicHeader from '../BasicHeader/index'
 import SiderIndex from '../BasicSider/siderIndex.vue'
 import PlayBar from '../PlayBar/playBar.vue'
+import FindMusic from '../routerPage/findMuiscContent.vue'
 
 export default {
     components:{
         basicHeader,
         PlayBar,
         SiderIndex,
+        FindMusic,
     },
     data() {
         return {
