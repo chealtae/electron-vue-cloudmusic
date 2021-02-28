@@ -107,12 +107,12 @@ export default {
     }
 
     #main_line_control{
-        background-color: rgba(64, 60, 60, 0.16);
         display: inline-block;
-        width: 1px;
+        width: 11px;
         height: 100%;
         cursor: w-resize;
-        margin:0px 1px;
-        
+        z-index: 10;
+        border-right: rgba(64, 60, 60, 0.16) 1px solid;
+        margin-left: -12px;
     }
 </style>
