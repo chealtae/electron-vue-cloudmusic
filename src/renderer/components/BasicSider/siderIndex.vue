@@ -100,20 +100,22 @@ export default {
         findMusicClick(){
             this.isActived = 'findMusic';
             this.changeStatus();
-            this.$router.push("/")
+            this.$router.push("/findMusic")
         },
         musicVedioClick(){
             this.isActived = 'musicVedio';
             this.changeStatus();
-            this.$router.push("/MusicVedio")
+            this.$router.push("/musicVedio")
         },
         friendsCircleClick(){
             this.isActived = 'friendsCircle';
             this.changeStatus();
+            this.$router.push('/friendsCircle')
         },
         FMClick(){
             this.isActived = 'FM';
             this.changeStatus();
+            this.$router.push('/personalFM')
         },
         localMusicClick(){
             this.isActived = 'localMusic';
