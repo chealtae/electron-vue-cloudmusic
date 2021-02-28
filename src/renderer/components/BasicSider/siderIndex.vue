@@ -37,7 +37,7 @@
                         <slot >创建的歌单</slot>
                     </div>
                 </template>
-                <el-menu-item v-for="createdItem in createdItemList" :key="createdItem.playListsId" >
+                <el-menu-item v-for="createdItem in createdItemList" :key="createdItem.playListsId" @click="playlistClick">
                     <span class="sider_menu_item">
                         {{createdItem.playlistsName}}
                     </span>
@@ -49,7 +49,7 @@
                         <slot >收藏的歌单</slot>
                     </div>
                 </template>
-                    <el-menu-item v-for="collectedItem in collectedItemList" :key="collectedItem.playListsId">
+                    <el-menu-item v-for="collectedItem in collectedItemList" :key="collectedItem.playListsId" @click="playlistClick">
                         <span class="sider_menu_item">
                             {{collectedItem.playlistsName}}
                         </span>
@@ -120,26 +120,32 @@ export default {
         localMusicClick(){
             this.isActived = 'localMusic';
             this.changeStatus();
+            this.$router.push('/localMusic')
         },
         downloadClick(){
             this.isActived = 'download';
             this.changeStatus();
+            this.$router.push('/download')
         },
         myCloudMusicClick(){
             this.isActived = 'myCloudMusic';
             this.changeStatus();
+            this.$router.push('/myCloudMusic')
         },
         radioStationClick() {
             this.isActived = 'radioStation';
             this.changeStatus();
+            this.$router.push('/radioStation')
         },
         myCollectClick() {
             this.isActived = 'myCollect';
             this.changeStatus();
+            this.$router.push('/myCollect')
         },
         playlistClick() {
             this.isActived = 'playlist';
             this.changeStatus();
+            this.$router.push('/playlist')
         },
         changeStatus(){
             if(this.isActived === 'findMusic'){
