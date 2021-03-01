@@ -7,7 +7,9 @@
             <sider-index id="main_aside" :style="shrinkStyle"></sider-index>
             <div id="main_line_control"  v-drag='{set:set}' @mouseup="setOldWidthVal">
             </div>
-            <router-view></router-view>
+            <div id="pagecontent">
+                <router-view></router-view>     
+            </div>
         </div>
         <div id="footer">
             播放器
@@ -46,8 +48,8 @@ export default {
     watch: {
         dragVal(val) {
             this.widthVal = parseInt(this.oldWidthVal) - parseInt(val)
-            if(this.widthVal < 200) {
-                this.widthVal = '200'
+            if(this.widthVal < 220) {
+                this.widthVal = '220'
             } else if (this.widthVal > 400) {
                 this.widthVal = '400'
             }
@@ -94,11 +96,13 @@ export default {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        
     }
 
     .basic_layout{
         height: 100vh;
         width: 100vw;
+        
     }
 
     #main {
@@ -114,5 +118,9 @@ export default {
         z-index: 10;
         border-right: rgba(64, 60, 60, 0.16) 1px solid;
         margin-left: -12px;
+    }
+    #pagecontent{
+        width: 100%;
+        height: 60px;
     }
 </style>
