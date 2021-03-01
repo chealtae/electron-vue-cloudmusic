@@ -47,7 +47,7 @@ export default {
 </script>
 <style>
     #top_bar {
-        background: rgb(255, 133, 163);
+        background: rgba(133, 202, 211, 0.616);
         height: 63px;
         display: flex;
         
