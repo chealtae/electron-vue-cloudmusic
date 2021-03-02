@@ -88,26 +88,32 @@ export default {
         recommendClick(){
             this.isActived = 'recommend';
             this.changeStatus();
+            this.$router.push('/recommend')
         },
         playListClick() {
             this.isActived = 'playList'
             this.changeStatus();
+            this.$router.push('/playList')
         },
         radioClick() {
             this.isActived = 'radio'
             this.changeStatus()
+            this.$router.push('/radio')
         },
         rankClick() {
             this.isActived = 'rank'
             this.changeStatus()
+            this.$router.push('/rank')
         },
         singerClick() {
             this.isActived = 'singer'
             this.changeStatus() 
+            this.$router.push('/singer')
         },
         lastestMusicClick() {
             this.isActived = 'lastestMusic'
             this.changeStatus();
+            this.$router.push('/lastestMusic')
         }
     }
 }

@@ -1,9 +1,7 @@
 <template>
     <div class="FindMusicContent">
         <sub-menu></sub-menu>
-        发现音乐
-        
-        
+        <router-view></router-view>
     </div>
 </template>
 <script>
@@ -13,6 +11,9 @@ export default {
     components: { 
       subMenu 
     },
+    mounted() {
+        this.$router.push('/recommend')
+    }
 
     
 }

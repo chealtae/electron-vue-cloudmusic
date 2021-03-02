@@ -31,9 +31,9 @@ export default {
     },
     data() {
         return {
-            minAsideWidth: '200', 
-            widthVal: '200',//存放要缩放元素实时变动值
-            oldWidthVal: '200', //存放触发按下鼠标时的元素宽度
+            minAsideWidth: '220', 
+            widthVal: '220',//存放要缩放元素实时变动值
+            oldWidthVal: '220', //存放触发按下鼠标时的元素宽度
             dragVal:0  //存放实时鼠标移动的距离
 
         }
@@ -77,7 +77,7 @@ export default {
         }
     },
     mounted() {
-        this.$router.push('/findMusic')
+        this.$router.push('/recommend')
     },
     methods: {
         set(l) {

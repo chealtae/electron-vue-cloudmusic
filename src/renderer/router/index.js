@@ -18,7 +18,39 @@ export default new Router({
         {
           path: '/findMusic',
           name: 'findMusic',
-          component: require('@/components/routerPage/findMusic').default
+          component: require('@/components/routerPage/findMusic').default,
+          children:[
+            {
+              path: '/recommend',
+              name: 'recommend',
+              component: require('@/components/FindMusicContent/recommend').default,
+            },
+            {
+              path: '/playList',
+              name: 'playList',
+              component: require('@/components/FindMusicContent/playList').default,
+            },
+            {
+              path: '/rank',
+              name: 'rank',
+              component: require('@/components/FindMusicContent/rank').default,
+            },
+            {
+              path: '/radio',
+              name: 'radio',
+              component: require('@/components/FindMusicContent/radio').default,
+            },
+            {
+              path: '/singer',
+              name: 'singer',
+              component: require('@/components/FindMusicContent/singer').default,
+            },
+            {
+              path: '/lastestMusic',
+              name: 'lastestMusic',
+              component: require('@/components/FindMusicContent/lastestMusic').default,
+            },
+          ]
         },
         {
           path: '/musicVedio',
