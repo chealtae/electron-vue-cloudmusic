@@ -19,9 +19,7 @@ export default {
 }
 </script>
 <style >
-    .subContent{
-        height: 89%;
-        width: 100%;
-        overflow: scroll;
+    .FindMusicContent{
+        height: 100%;
     }
 </style>

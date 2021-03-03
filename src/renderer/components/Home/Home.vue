@@ -121,6 +121,6 @@ export default {
     }
     #pagecontent{
         width: 100%;
-        height: 60px;
+        height: 100%;
     }
 </style>
