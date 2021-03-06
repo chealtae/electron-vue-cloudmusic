@@ -9,55 +9,42 @@
                 </el-carousel>
             </template>
         </div>
-        <div>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
-            666666<br>
+        <div class="recommend_list">
+           <div class="recommend_list_box">
+               <span class="recommend_span">推荐歌单</span>
+            </div>
+           <div class="recommend_playlist">
+               <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
+                   <div class="item_img">
+                       <img :src="item.url" alt="" style="width:100% ; height:100%">
+                   </div>
+                   <div class="item_span"></div>
+               </div>
+           </div>
+           <div class="recommend_playlist">
+               <div class="recommend_playlist_item">
+                   <div class="item_img">
+                       <img src="../../assets/img/img1.jpg" alt="">
+                   </div>
+                   <div class="item_span"></div>
+               </div>
+               <div class="recommend_playlist_item">
+                   <div class="item_img"></div>
+                   <div class="item_span"></div>
+               </div>
+               <div class="recommend_playlist_item">
+                   <div class="item_img"></div>
+                   <div class="item_span"></div>
+               </div>
+               <div class="recommend_playlist_item">
+                   <div class="item_img"></div>
+                   <div class="item_span"></div>
+               </div>
+               <div class="recommend_playlist_item">
+                   <div class="item_img"></div>
+                   <div class="item_span"></div>
+               </div>
+           </div>
         </div>
     </div>
     
@@ -91,6 +78,28 @@ export default {
                     url:require("@/assets/img/banner6.jpg"),
                     id:6
                 }
+            ],
+            playlist:[
+                {
+                    id:1,
+                    url:require("@/assets/img/img1.jpg"),
+                },
+                {
+                    id:2,
+                    url:require("@/assets/img/img1.jpg"),
+                },
+                {
+                    id:3,
+                    url:require("@/assets/img/img1.jpg"),
+                },
+                {
+                    id:4,
+                    url:require("@/assets/img/img1.jpg"),
+                },
+                {
+                    id:5,
+                    url:require("@/assets/img/img1.jpg"),
+                },
             ]
         }
     }
@@ -98,7 +107,7 @@ export default {
 </script>
 <style >
     .recommend_main{
-        height: 93%;
+        height: 89%;
         overflow: scroll;
     }
     .carousel_map{
@@ -122,5 +131,20 @@ export default {
     .el-carousel__item:nth-child(2n+1) {
         background-color: #d3dce6;
         widows: 400px;
+    }
+    .recommend_list{
+        margin: 0px auto;
+        width: 90%;
+        max-width:1100px;
+    }
+    .recommend_playlist{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .recommend_playlist_item{
+        height: 200px;
+        width: 18%;
+        border: 1px black solid;
     }
 </style>
