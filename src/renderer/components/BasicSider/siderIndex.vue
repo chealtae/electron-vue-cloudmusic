@@ -368,6 +368,7 @@ export default {
     .sider_menu{
         overflow:hidden; 
         border-right:0;
+        
     }
     .sider_menu_title{
         color: rgb(179, 171, 171);
@@ -378,6 +379,10 @@ export default {
         display: block;
         position: absolute;
         margin-top: -4px;
+        text-overflow: ellipsis;
+        white-space: nowrap; 
+        overflow: hidden;
+        width: 80%;
     }
     .el-submenu .el-menu-item{
         height: 40px;

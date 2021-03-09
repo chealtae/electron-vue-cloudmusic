@@ -16,33 +16,17 @@
            <div class="recommend_playlist">
                <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
                    <div class="item_img">
-                       <img :src="item.url" alt="" style="width:100% ; height:100%">
+                       <img :src="item.url" alt="" style="width:100% ; height:100%; border-radius:6px">
                    </div>
-                   <div class="item_span"></div>
+                   <div class="item_span">{{item.title}}</div>
                </div>
            </div>
            <div class="recommend_playlist">
-               <div class="recommend_playlist_item">
+               <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
                    <div class="item_img">
-                       <img src="../../assets/img/img1.jpg" alt="">
+                       <img :src="item.url" alt="" style="width:100% ; height:100% ;border-radius:6px">
                    </div>
-                   <div class="item_span"></div>
-               </div>
-               <div class="recommend_playlist_item">
-                   <div class="item_img"></div>
-                   <div class="item_span"></div>
-               </div>
-               <div class="recommend_playlist_item">
-                   <div class="item_img"></div>
-                   <div class="item_span"></div>
-               </div>
-               <div class="recommend_playlist_item">
-                   <div class="item_img"></div>
-                   <div class="item_span"></div>
-               </div>
-               <div class="recommend_playlist_item">
-                   <div class="item_img"></div>
-                   <div class="item_span"></div>
+                   <div class="item_span">{{item.title}}</div>
                </div>
            </div>
         </div>
@@ -83,22 +67,27 @@ export default {
                 {
                     id:1,
                     url:require("@/assets/img/img1.jpg"),
+                    title:'[华语私人订制] 最懂你的华语推荐 每日更新35首'
                 },
                 {
                     id:2,
                     url:require("@/assets/img/img1.jpg"),
+                    title:'神仙翻唱:每首都是神仙级的Cover'
                 },
                 {
                     id:3,
                     url:require("@/assets/img/img1.jpg"),
+                    title:'神仙翻唱:每首都是神仙级的Cover'
                 },
                 {
                     id:4,
                     url:require("@/assets/img/img1.jpg"),
+                    title:'神仙翻唱:每首都是神仙级的Cover'
                 },
                 {
                     id:5,
                     url:require("@/assets/img/img1.jpg"),
+                    title:'神仙翻唱:每首都是神仙级的Cover'
                 },
             ]
         }
@@ -132,6 +121,15 @@ export default {
         background-color: #d3dce6;
         widows: 400px;
     }
+
+    .recommend_span {
+        font-size: 22px;
+        font-weight: bolder;
+    }
+
+    .recommend_list_box{
+        margin-top: 20px;
+    }
     .recommend_list{
         margin: 0px auto;
         width: 90%;
@@ -141,10 +139,22 @@ export default {
         display: flex;
         justify-content: space-between;
         margin-bottom: 20px;
+        margin-top: 13px;
     }
     .recommend_playlist_item{
-        height: 200px;
         width: 18%;
-        border: 1px black solid;
+    }
+    .item_img{
+        border-radius: 8px;
+    }
+    .item_span{
+        font-size: 14px;
+        max-height: 43px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient: vertical;
+        line-height: 23px;
     }
 </style>

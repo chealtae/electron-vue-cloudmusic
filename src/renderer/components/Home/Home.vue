@@ -123,4 +123,7 @@ export default {
         width: 100%;
         height: 100%;
     }
+    #footer{
+        width: 67px;
+    }
 </style>
