@@ -29,6 +29,14 @@
                    <div class="item_span">{{item.title}}</div>
                </div>
            </div>
+           <div class="recommend_playlist">
+               <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
+                   <div class="item_img">
+                       <img :src="item.url" alt="" style="width:100% ; height:100% ;border-radius:6px">
+                   </div>
+                   <div class="item_span">{{item.title}}</div>
+               </div>
+           </div>
         </div>
     </div>
     
@@ -96,7 +104,7 @@ export default {
 </script>
 <style >
     .recommend_main{
-        height: 89%;
+        height: 93%;
         overflow: scroll;
     }
     .carousel_map{

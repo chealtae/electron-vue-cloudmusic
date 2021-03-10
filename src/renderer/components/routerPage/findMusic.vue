@@ -1,7 +1,12 @@
 <template>
     <div class="FindMusicContent">
-        <sub-menu></sub-menu>
-        <router-view></router-view>
+        <div style="height:70px">
+            <sub-menu></sub-menu>
+        </div>
+        <div style="flex:1; height:100%">
+            <router-view></router-view>
+        </div>
+        
     </div>
 </template>
 <script>
@@ -21,5 +26,7 @@ export default {
 <style >
     .FindMusicContent{
         height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 </style>

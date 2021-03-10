@@ -102,12 +102,14 @@ export default {
     .basic_layout{
         height: 100vh;
         width: 100vw;
-        
+        display: flex;
+        flex-direction:column;
     }
 
     #main {
         display: flex;
-        height: 80%;
+        height: 100%;
+        flex: 1;
     }
 
     #main_line_control{
@@ -123,7 +125,12 @@ export default {
         width: 100%;
         height: 100%;
     }
+    #header{
+        height: 67px;
+        width: 100%;
+    }
     #footer{
-        width: 67px;
+        height: 67px;
+        width: 100%;
     }
 </style>
