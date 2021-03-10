@@ -27,6 +27,7 @@
     </div>
 </template>
 <script>
+import { mapGetters ,mapActions } from 'vuex';
 export default {
     data() {
         return{
@@ -36,10 +37,11 @@ export default {
             rankStatus: false,
             singerStatus: false,
             lastestMusicStatus: false,
-            isActived: 'recommend'
+            // isActived: 'recommend'
         }
     },
     methods: {
+        ...mapActions(['setActived']),
         changeStatus(){
             if(this.isActived === 'recommend'){
                 this.recommendStatus = true ;
@@ -86,12 +88,15 @@ export default {
             }
         },
         recommendClick(){
-            this.isActived = 'recommend';
+            this.setActived('recommend')
+            // this.isActived = 'recommend';
             this.changeStatus();
             this.$router.push('/recommend')
         },
         playListClick() {
-            this.isActived = 'playList'
+            this.setActived('playList')
+            console.log(this.isActived)
+            // this.isActived = 'playList'
             this.changeStatus();
             this.$router.push('/playList')
         },
@@ -115,6 +120,9 @@ export default {
             this.changeStatus();
             this.$router.push('/lastestMusic')
         }
+    },
+    computed:{
+        ...mapGetters(['isActived'])
     }
 }
 </script>

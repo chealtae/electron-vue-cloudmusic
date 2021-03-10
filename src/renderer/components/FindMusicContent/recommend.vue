@@ -11,7 +11,7 @@
         </div>
         <div class="recommend_list">
            <div class="recommend_list_box">
-               <span class="recommend_span">推荐歌单</span>
+               <span class="recommend_span" @click="linkToRecommend">推荐歌单</span>
             </div>
            <div class="recommend_playlist">
                <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
@@ -42,6 +42,7 @@
     
 </template>
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
     data() {
         return {
@@ -99,6 +100,13 @@ export default {
                 },
             ]
         }
+    },
+    methods: {
+        ...mapActions(['setActived']),
+        linkToRecommend() {
+            this.$router.push('/playList')
+            this.setActived('playList')
+        }
     }
 }
 </script>
@@ -133,6 +141,7 @@ export default {
     .recommend_span {
         font-size: 22px;
         font-weight: bolder;
+        cursor:pointer;
     }
 
     .recommend_list_box{
