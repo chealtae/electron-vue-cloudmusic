@@ -145,7 +145,7 @@ export default {
         playlistClick() {
             this.isActived = 'playlist';
             this.changeStatus();
-            this.$router.push('/playlist')
+            this.$router.push('/playlistItem')
         },
         changeStatus(){
             if(this.isActived === 'findMusic'){

@@ -93,9 +93,9 @@ export default new Router({
           component: require('@/components/routerPage/myCollect').default
         },
         {
-          path: '/playlist',
-          name: 'playlist',
-          component: require('@/components/routerPage/playlist').default
+          path: '/playlistItem',
+          name: 'playlistItem',
+          component: require('@/components/routerPage/playlistItem').default
         },
         
     ]
