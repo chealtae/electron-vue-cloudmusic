@@ -57,9 +57,9 @@
                 <el-tab-pane label="评论" name="second"></el-tab-pane>
             </el-tabs> 
         </div>
-        <div v-show="activeName === 'first'"> 
+        <div v-show="activeName === 'first'" style="width:100%"> 
             <template>
-                <el-table :data="tableData" stripe style="width: 100%">
+                <el-table :data="tableData" stripe style="width: 99%">
                     <el-table-column type="index" :index="indexMethod"></el-table-column>
                     <el-table-column width="180">
                          <template slot-scope="scope">
@@ -93,10 +93,17 @@
                 </el-table>
             </template>
         </div>
+        <div v-show ="activeName === 'second'">
+            <comment></comment>
+        </div>
     </div>
 </template>
 <script>
+import Comment from '../Common/Comment.vue';
 export default {
+    components:{
+        Comment,
+    },
     data() {
         return {
             isMine:false,
