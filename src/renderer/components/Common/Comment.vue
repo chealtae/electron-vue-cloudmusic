@@ -1,11 +1,8 @@
 <template>
-    <div>
-        <div class="comment_title">
-            <span>评论</span>
-            <span>已有{{}}条评论</span>
-        </div>
+    <div style="margin:0px 35px">
+        
         <div class="comment_input">
-            <el-input style="width:80%"
+            <el-input style="width:100%"
                 type="textarea"
                 :rows="2"
                 placeholder="发表评论"
@@ -15,14 +12,36 @@
                 v-model="textarea">
             </el-input>
         </div>
-        <div>
+        <div class="comment_button">
+            <el-button style="float:right;margin-top:5px" size="mini" round>评论</el-button>
+        </div>
+        <div class="comment">
             <span>精彩评论</span>
             <div class="topComment" v-for="item in commentItem" :key="item.userId">
                     <img :src="item.img" alt="" class="author_img">
-                <div>
-                    <span>{{item.authorName}}</span>
-                    <span>{{item.commentContent}}</span>
+                <div class="comment_content">
+                    <span class="comment_span">{{item.authorName}}</span>
+                    <span class="comment_span">{{item.commentContent}}</span>
+                    <div style="background-color:rgba(173, 173, 173, 0.37);;">
+                        <span class="comment_span">@{{item.authorName}}</span>
+                        <span class="comment_span">{{item.commentContent}}</span>
+                    </div>
+                    <div  class="operation_line" style="margin-top:5px">
+                        <span  class="comment_span_1">{{item.commentData}}</span>
+                        <div  style="float:right">
+                            <span class="report_span" v-if="mineId !== item.userId">举报</span>
+                            <i class="el-icon-delete" v-else></i>
+                            <el-divider direction="vertical"></el-divider>
+                            <img class="good_icon" src="../../assets/img/good.svg" alt="">
+                            <span style="cursor: pointer font-size:14px">{{item.likeNumber}}</span>
+                            <el-divider direction="vertical"></el-divider>
+                            <i class="el-icon-chat-line-round"></i>
+                            <el-divider direction="vertical"></el-divider>
+                            <i class="el-icon-share"></i>
+                        </div> 
+                    </div>
                 </div>
+                
             </div>
             
         </div>
@@ -33,6 +52,7 @@ export default {
     data() {
         return {
             textarea:'',
+            mineId:1,
             commentItem:[{
                 userId:1,
                 img:require("@/assets/img/img1.jpg"),
@@ -41,7 +61,8 @@ export default {
                 commentData:'2016年4月1日',
                 commentId:1,
                 likeNumber:7766
-            }]
+            }],
+            commentNumber:7770
         }
     }
 }
@@ -53,4 +74,42 @@ export default {
         border-radius: 50%;
         float: left;
     }
+    .comment_button{
+        height: 40px;
+    }
+
+    .comment_content{
+        margin-left: 40px;
+    }
+    .comment_span{
+        font-size: 12px;
+    }
+    .comment_span_1{
+        font-size: 12px;
+        color:rgba(115, 115, 115, 0.74);
+    }
+    .el-icon-chat-line-round{
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .el-icon-share{
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .el-icon-delete{
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .good_icon{
+        cursor: pointer;
+    }
+    .operation_line .report_span{
+        display: none;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .operation_line:hover .report_span{
+        display: inline;
+    }
+
 </style>

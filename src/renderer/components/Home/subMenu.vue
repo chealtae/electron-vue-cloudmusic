@@ -90,6 +90,7 @@ export default {
         recommendClick(){
             this.setActived('recommend')
             // this.isActived = 'recommend';
+            console.log(this.isActived)
             this.changeStatus();
             this.$router.push('/recommend')
         },

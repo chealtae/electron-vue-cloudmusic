@@ -28,11 +28,11 @@
                 </div>
                 <div class="opreation">
                     <el-row>
-                        <el-button type="primary" round icon="el-icon-caret-right">播放全部</el-button>
-                        <el-button v-if="isCollect" round icon="l-icon-folder-checked">已收藏({{playListDeatils.collectTime}})</el-button>
-                        <el-button v-else round icon="el-icon-folder-add" :disabled="isMine">收藏({{playListDeatils.collectTime}})</el-button>
-                        <el-button round icon="el-icon-share">分享({{playListDeatils.shareTime}})</el-button>
-                        <el-button round icon="el-icon-download">全部下载</el-button>
+                        <el-button type="primary" size="small" round icon="el-icon-caret-right">播放全部</el-button>
+                        <el-button v-if="isCollect"  size="small" round icon="l-icon-folder-checked">已收藏({{playListDeatils.collectTime}})</el-button>
+                        <el-button v-else round size="small" icon="el-icon-folder-add" :disabled="isMine">收藏({{playListDeatils.collectTime}})</el-button>
+                        <el-button round size="small" icon="el-icon-share">分享({{playListDeatils.shareTime}})</el-button>
+                        <el-button round size="small" icon="el-icon-download">全部下载</el-button>
                     </el-row>
                 </div>
                 <div class="label">
@@ -52,16 +52,22 @@
             </div>
         </div>
         <div>
-            <el-tabs v-model="activeName" @tab-click="handleClick" style="width:375px">
-                <el-tab-pane label="歌曲列表" name="first"></el-tab-pane>
-                <el-tab-pane label="评论" name="second"></el-tab-pane>
-            </el-tabs> 
+            <div class="sub_menu">
+                <div :class="playListStatus ? 'submenu_item_click':'submenu_item'" @click="playListClick">
+                    <span :class="playListStatus ? 'submenu_span_click':'submenu_span'">歌单</span>
+                    <div :class="playListStatus ? 'menuLine':''"></div>
+                </div>
+                <div :class="commentStatus ? 'submenu_item_click':'submenu_item'" @click="commentClick">
+                    <span :class="commentStatus ? 'submenu_span_click':'submenu_span'">评论({{this.commentNumber}})</span>
+                    <div :class="commentStatus ? 'menuLine':''"></div>
+                </div>
+            </div>
         </div>
-        <div v-show="activeName === 'first'" style="width:100%"> 
+        <div v-show="playListStatus === true" style="width:100%"> 
             <template>
                 <el-table :data="tableData" stripe style="width: 99%">
-                    <el-table-column type="index" :index="indexMethod"></el-table-column>
-                    <el-table-column width="180">
+                    <el-table-column type="index" ></el-table-column>
+                    <el-table-column width="80">
                          <template slot-scope="scope">
                             <i class="el-icon-star-on" v-if="scope.row.collect" @click="handleEdit(scope.$index, scope.row)"></i>
                             <i class="el-icon-star-off" v-else @click="handleEdit(scope.$index, scope.row)"></i>
@@ -93,7 +99,7 @@
                 </el-table>
             </template>
         </div>
-        <div v-show ="activeName === 'second'">
+        <div v-show ="commentStatus === true">
             <comment></comment>
         </div>
     </div>
@@ -106,8 +112,11 @@ export default {
     },
     data() {
         return {
+            playListStatus:true,
+            commentStatus:false,
             isMine:false,
             isCollect:true,
+            commentNumber:7788,
             playListDeatils:{
                 url:require("@/assets/img/img1.jpg"),
                 type:'歌单',
@@ -148,6 +157,14 @@ export default {
             row.collect = !row.collect //collect需要再数据获取的时候就初始哈
             console.log(row.collect )
             //点击都要发送请求
+        },
+        commentClick(){
+            this.commentStatus = true;
+            this.playListStatus = false;
+        },
+        playListClick(){
+            this.commentStatus = false;
+            this.playListStatus = true;
         }
     }
 }
@@ -156,6 +173,7 @@ export default {
     .mian_content{
         display: flex;
         flex-direction: column;
+        min-width: 780px;
     }
     .introduce_header{
         height: 180px;
@@ -230,5 +248,37 @@ export default {
     .icon01.el-icon-download{
         font-size: 18px;
         cursor: pointer;
+    }
+     .submenu_item_click{
+        height: 60px;
+        cursor: pointer;
+    }
+    .submenu_span{
+        display: block;
+        margin-top: 24px;
+        font-size: 14px;
+    }
+    .submenu_span_click{
+        display: block;
+        margin-top: 22px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .submenu_item{
+        height: 60px;
+        cursor: pointer;
+    }
+    .menuLine{
+        height: 2px;
+        width: 76%;
+        background-color: rgba(133, 202, 211, 0.616);
+        margin: 0 auto;
+        border-radius: 5px;
+    }
+    .sub_menu{
+        display: flex;
+        justify-content: space-around;
+        width: 120px;
+        margin-left: 30px;
     }
 </style>
