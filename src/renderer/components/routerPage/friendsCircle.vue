@@ -1,10 +1,13 @@
 <template>
     <div>
-        朋友动态
+        <share-page></share-page>
     </div>
 </template>
 <script>
+import SharePage from '../Common/SharePage.vue'
 export default {
-    
+    components:{
+        SharePage,
+    }
 }
 </script>
