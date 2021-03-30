@@ -22,9 +22,13 @@
                                 ></el-image>
                         </div>
                     </div>
-                    
                 </div>
-                <div  style="float:right">
+                <div class="shareSing">
+                    <img :src="item.singImg" class="shareSingImg">
+                    <span class="shareSing_span">{{item.singName}}</span>
+                    <span class="shareSing_span_1">{{item.singers}}</span>
+                </div>
+                <div style="float:right;margin-top: 5px">
                     <img class="good_icon" src="../../assets/img/good.svg" alt="">
                     <span style="cursor: pointer; font-size:14px">({{item.likeNumber}})</span>
                     <el-divider direction="vertical"></el-divider>
@@ -61,6 +65,9 @@ export default {
                 likeNumber:999,
                 commentNumber:999,
                 shareNumber:12,
+                singImg:require("@/assets/img/img1.jpg"),
+                singName:'下一段旅程',
+                singers:'杨和苏KeyNG/张杰',
                 showComment:false //后面获取数据后再加入
             }],
             srcList: [
@@ -140,5 +147,26 @@ export default {
     }
     .good_icon{
         cursor: pointer;
+    }
+    .shareSing{
+        height: 50px;
+        background: rgba(173, 173, 173, 0.37);
+    }
+    .shareSingImg{
+        padding-top: 5px;
+        padding-left: 5px;
+        border-radius: 3px;
+        height: 45px;
+        float: left;
+    }
+    .shareSing_span{
+        font-size: 12px;
+        line-height: 30px;
+        margin-left: 10px;
+    }
+    .shareSing_span_1{
+        display: block;
+        font-size: 12px;
+        margin-left: 50px;
     }
 </style>
