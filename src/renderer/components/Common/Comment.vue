@@ -49,6 +49,7 @@
 </template>
 <script>
 export default {
+    props:['commentId'],
     data() {
         return {
             textarea:'',
@@ -64,13 +65,16 @@ export default {
             }],
             commentNumber:7770
         }
+    },
+    mounted() {
+        console.log(this.commentId)
     }
 }
 </script>
 <style scoped>
     .author_img{
-        height: 30px;
-        width: 30px;
+        height: 40px;
+        width: 40px;
         border-radius: 50%;
         float: left;
     }
@@ -79,7 +83,7 @@ export default {
     }
 
     .comment_content{
-        margin-left: 40px;
+        margin-left: 55px;
     }
     .comment_span{
         font-size: 12px;

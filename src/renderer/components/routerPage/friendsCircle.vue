@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="friendsCircle">
         <share-page></share-page>
     </div>
 </template>
@@ -11,3 +11,9 @@ export default {
     }
 }
 </script>
+<style scoped>
+    .friendsCircle{
+        height: 100%;
+        overflow: auto;
+    }
+</style>
