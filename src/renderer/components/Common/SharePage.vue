@@ -92,6 +92,8 @@ export default {
 <style scoped>
     .sharePage{
         margin: 0 30px;
+        width: 100%;
+        position: relative;
     }
     .userImg{
         height: 40px;
@@ -109,7 +111,8 @@ export default {
     .share_title{
         position: absolute;
         padding-top: 20px;
-        width: 77%;
+        width: 100%;
+        background: white;
     }
     .share_content{
         padding-top: 52px;

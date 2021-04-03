@@ -1,13 +1,16 @@
 <template>
     <div class="friendsCircle">
-        <share-page></share-page>
+        <share-page style="width:100%"></share-page>
+        <share-sider style=" width:350px"></share-sider>
     </div>
 </template>
 <script>
 import SharePage from '../Common/SharePage.vue'
+import ShareSider from '../Common/ShareSider.vue'
 export default {
     components:{
         SharePage,
+        ShareSider,
     }
 }
 </script>
@@ -15,5 +18,6 @@ export default {
     .friendsCircle{
         height: 100%;
         overflow: auto;
+        display: flex;
     }
 </style>

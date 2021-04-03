@@ -126,7 +126,7 @@ export default {
         height: 100%;
     }
     #header{
-        height: 67px;
+        height: 63px;
         width: 100%;
     }
     #footer{
