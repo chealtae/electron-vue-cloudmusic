@@ -3,7 +3,7 @@
         <div style="height:70px">
             <sub-menu></sub-menu>
         </div>
-        <div style="flex:1; height:100%">
+        <div style="flex:1; height:90%">
             <router-view></router-view>
         </div>
         

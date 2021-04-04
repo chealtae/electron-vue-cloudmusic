@@ -112,7 +112,7 @@ export default {
 </script>
 <style >
     .recommend_main{
-        height: 93%;
+        height: 100%;
         overflow: scroll;
     }
     .carousel_map{

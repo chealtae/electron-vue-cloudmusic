@@ -12,7 +12,6 @@
             </div>
         </div>
         <div id="footer">
-            播放器
             <play-bar></play-bar>
         </div>
         
@@ -22,12 +21,12 @@
 
 import basicHeader from '../BasicHeader/index'
 import SiderIndex from '../BasicSider/siderIndex.vue'
-import PlayBar from '../PlayBar/playBar.vue'
+import PlayBar from '../Common/playBar.vue'
 export default {
     components:{
         basicHeader,
-        PlayBar,
         SiderIndex,
+        PlayBar,
     },
     data() {
         return {
@@ -130,7 +129,9 @@ export default {
         width: 100%;
     }
     #footer{
-        height: 67px;
+        height: 75px;
         width: 100%;
+        border-top: 1px solid rgba(141, 139, 139, 0.507);
+        z-index: 10;
     }
 </style>
