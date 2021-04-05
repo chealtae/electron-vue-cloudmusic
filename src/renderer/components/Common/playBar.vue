@@ -10,7 +10,7 @@
 		</div>
 		<div style="margin-top:8px">
 			<div>
-				<audio src="../../assets/img/test.mp3" id="audio" ></audio> 
+				<audio :src="currentSongSrc" id="audio" ></audio> 
 			</div>
 			<div class="operation">
 				<img v-show="playStyle === 'circle'" title="单曲播放" src="../../assets/img/circlePlay.svg" alt="" @click="changeStyle">
@@ -64,10 +64,37 @@ export default {
 			controllerOffsetWidth: 0,
 			progressbarTranslateX: 0,
 			isplay:false,
-			playStyle:'list',//默认列表播放
+			playStyle:localStorage.getItem('playStyle')? localStorage.getItem('playStyle'):"list",//默认列表播放
 			song:{singId:1,songName:'爱就一个字11111',singer:'傲七爷',isCollect:false},
 			visible: false,
+			getSongList:[{singId:1},{singId:2},{singId:3}],
+			songSrc:[{src:require('@/assets/img/test.mp3')},{src:require('@/assets/img/test2.mp3')},{src:require('@/assets/img/test3.mp3')}],
+			currentSongSrc:require('@/assets/img/test.mp3'),
 		}
+	},
+	mounted() {
+		let audioPlay = document.getElementById('audio');
+		audioPlay.loop = false //默认静音循环播放初始状态
+		audioPlay.addEventListener('ended',()=> {
+			if(this.playStyle === 'list'){ //如果是列表播放，需要再播放完后更改歌曲列表
+				let playedSong = this.getSongList.shift();
+				this.getSongList.push(playedSong) //把播放完的音乐移动到数组尾部
+				// this.$axios.get(``).then((res) => {
+					
+				// })
+				this.currentSongSrc = this.songSrc[this.getSongList[0].singId-1].src; //todo 这里直接删掉 ，改用请求过来的数据
+				console.log(this.currentSongSrc);
+			} else if(this.playStyle === 'circle') {
+				audioPlay.loop = true //设置单曲循环播放
+			} else if(this.playStyle === 'randon') {
+				this.currentSongSrc = this.songSrc[Math.ceil(Math.random()*this.getSongList.length-1)].src //向下取整
+				console.log(this.currentSongSrc);
+			}
+			setTimeout(() => { //todo 异步后应该不需要再用定时器
+				audioPlay.play()
+			}, 150);
+			
+		})
 	},
 	computed: {
 		processorOffsetWidth() {
@@ -94,10 +121,26 @@ export default {
 			this.isplay = false;
 		},
 		lastMusic() {
-
+			let player = document.getElementById('audio');
+			let playedSong = this.getSongList.pop();
+			this.getSongList.unshift(playedSong) //把播放完的音乐移动到数组t头部
+			this.currentSongSrc = this.songSrc[this.getSongList[0].singId-1].src; //todo 这里直接删掉 ，改用请求过来的数据
+			console.log(11111,this.currentSongSrc)
+			setTimeout(() => { //todo 异步后应该不需要再用定时器
+				player.play()
+			}, 150);
+			this.isplay = true;
 		},
 		nextMusic() {
-
+			let player = document.getElementById('audio');
+			let playedSong = this.getSongList.shift();
+			this.getSongList.push(playedSong) //把播放完的音乐移动到数组尾部
+			this.currentSongSrc = this.songSrc[this.getSongList[0].singId-1].src; //todo 这里直接删掉 ，改用请求过来的数据
+			console.log(11111,this.currentSongSrc)
+			setTimeout(() => { //todo 异步后应该不需要再用定时器
+				player.play()
+			}, 150);
+			this.isplay = true;
 		},
 		collectSong(){
 			this.song.isCollect = !this.song.isCollect
@@ -108,10 +151,13 @@ export default {
 		changeStyle() {
 			if(this.playStyle === 'list'){
 				this.playStyle = 'randon'
+				localStorage.setItem('playStyle','randon')
 			} else if (this.playStyle === 'randon'){
 				this.playStyle = 'circle'
+				localStorage.setItem('playStyle','circle')
 			} else if (this.playStyle === 'circle'){
 				this.playStyle = 'list'
+				localStorage.setItem('playStyle','list')
 			}
 		}
 	},
