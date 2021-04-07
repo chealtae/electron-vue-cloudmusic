@@ -1,7 +1,7 @@
 <template>
 	<div class="player">
 		<div class="songInfo">
-			<img src="../../assets/img/img1.jpg" alt="" class="songImg" >
+			<img src="../../assets/img/img1.jpg" alt="" class="songImg" @click="showDetails">
 			<span class="info_span">{{song.songName}}</span>
 			<img v-if="song.isCollect" src="../../assets/img/heart.svg" alt=""  class="heartImg" title="取消喜欢" @click="collectSong">
 			<img v-else src="../../assets/img/heart1.svg" alt=""  class="heartImg" title="喜欢" @click="cancelCollect">
@@ -47,8 +47,15 @@
 				<span style="font-size:14px">极高</span>
 			</div>
 			</el-popover>
-			<img src="../../assets/img/volume.svg" alt="" >
-			<img src="../../assets/img/mute.svg" alt="" >
+			<div style="display:flex">
+				<img v-if="!isMute" src="../../assets/img/volume.svg" alt="" @click="mute" class="operaIcon">
+				<img v-else src="../../assets/img/mute.svg" alt="" @click="mute" class="operaIcon">
+				<div class="volumeSize" @click="volumeMousedown" > 
+					<div class="processor"  :style="{width:`${volumeOffsetWidth}px`}"></div>
+					<div class="controller"  v-drag='{}' 
+					:style="{left:`${volumeOffsetWidth}px`}"></div>
+				</div>
+			</div>
 			<img src="../../assets/img/playList.svg" alt="" >
 		</div>
 		
@@ -59,13 +66,15 @@
 export default {
     data() {
 		return {
-			processMoveX : 300, 
+			processMoveX : 0, 
 			bufferOffsetWidth: 0,
+			volumeMoveX: localStorage.getItem('volume')? Number(localStorage.getItem('volume')):20,
 			controllerOffsetWidth: 0,
 			progressbarTranslateX: 0,
 			currentTime:'00:00',
 			musicTime:'00:00',
 			isplay:false,
+			isMute:false,
 			playStyle:localStorage.getItem('playStyle')? localStorage.getItem('playStyle'):"list",//默认列表播放
 			song:{singId:1,songName:'爱就一个字11111',singer:'傲七爷',isCollect:false},
 			visible: false,
@@ -85,17 +94,33 @@ export default {
 		TranslateX() {
 			return this.progressbarTranslateX
 		},
+		volumeOffsetWidth() {
+			return this.volumeMoveX
+		},
 		musicLength() {
 			return this.musicTime
 		},
 		currentPlayTime() {
 			return this.currentTime
-		}
+		},
 	},
 	methods: {
 		onMousedown(e){
 			e.preventDefault
 			this.processMoveX = e.offsetX
+			this.$refs.audio.currentTime = this.processMoveX/400 * this.$refs.audio.duration
+			if(this.processMoveX != 0){
+				this.isMute = false
+			} else {
+				this.isMute = true
+			}
+			console.log('moveX',this.processMoveX)
+		},
+		volumeMousedown(e){
+			e.preventDefault
+			this.volumeMoveX = e.offsetX
+			this.$refs.audio.volume  = this.volumeMoveX/50 
+			localStorage.setItem('volume',this.volumeMoveX)
 			console.log('moveX',this.processMoveX)
 		},
 		playMusic(){
@@ -162,7 +187,7 @@ export default {
 					console.log(this.currentSongSrc);
 				}
 				setTimeout(() => { //todo 异步后应该不需要再用定时器
-					audioPlay.play()
+					this.$refs.audio.play()
 				}, 150);
 				
 			})
@@ -172,15 +197,17 @@ export default {
 			this.$refs.audio.addEventListener('timeupdate',() => {
 				let timeDisplay = Math.floor(this.$refs.audio.currentTime)
 				let timeDisplay2 = Math.floor(this.$refs.audio.duration)
+				this.processMoveX = timeDisplay/timeDisplay2 * 400
+				console.log(this.processMoveX)
 				this.currentTime = this.processTime(timeDisplay)
 				this.musicTime = this.processTime(timeDisplay2)
 			});
-			console.log('xxxxxxxxxxxxxxxxxx')
+
 			this.$refs.audio.addEventListener('durationchange ', () => {
-				console.log('22222222222222222222')
 				let timeDisplay = Math.floor(this.$refs.audio.duration)
 				this.musicTime = this.processTime(timeDisplay)
 			})
+
 		},
 		processTime(timeDate) {
 			let minute =  Math.floor(timeDate / 60);
@@ -188,6 +215,20 @@ export default {
 			let secondPart = second < 10 ? '0'+second : second;
 			let minutePart = minute < 10 ? '0'+minute : minute;
 			return minutePart +':'+ secondPart;
+		},
+		mute() {
+			this.isMute = !this.isMute 
+			console.log(this.isMute)
+			if (this.isMute === true) {
+				this.volumeMoveX = 0;
+				this.$refs.audio.volume = 0
+			} else {
+				this.volumeMoveX = Number(localStorage.getItem('volume'))
+				this.$refs.audio.volume  = this.volumeMoveX/50 
+			}
+		},
+		showDetails() {
+			this.$router.push('/playDetails')
 		}
 	},
 	directives:{
@@ -253,15 +294,32 @@ export default {
 		font-size: 12px;
 	}
 	.silder{
-		width: 80%;
+		width: 400px;
 		height: 2px;
-		background-color: white;
+		background-color: #bfbdbd;;
 		margin:16px 5px 0px;
 		position: relative;
 
 	}
+	.volumeSize{
+		width: 50px;
+		height: 2px;
+		background-color: #bfbdbd;
+		margin-top: 24px;
+		margin-left: 5px;
+		position: relative;
+	}
+	.volumeSize:hover {
+		transform: scale(1,2);
+	}
+	.volumeSize:hover .controller{
+		display: block;
+	}
 	.silder:hover{
 		transform: scale(1,2);
+	}
+	.silder:hover .controller{
+		display: block;
 	}
 	
 	.processor{
@@ -272,6 +330,7 @@ export default {
 		border-bottom-right-radius: 6px;
 	}
 	.controller{
+		display: none;
 		position:absolute;
 		width: 10px;
 		height: 5px;
