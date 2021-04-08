@@ -20,7 +20,7 @@
 				<img v-if="!isplay" src="../../assets/img/play.svg" alt="" @click="playMusic" class="operaIcon">
 				<img v-else src="../../assets/img/pause.svg" alt="" @click="pauseMusic" class="operaIcon">
 				<img src="../../assets/img/nextSong.svg" alt="" @click="nextMusic" class="operaIcon">
-				<img src="../../assets/img/lyric.svg" alt="" title="显示歌词" class="operaIcon">
+				<img src="../../assets/img/lyric.svg" alt="" title="显示歌词" class="operaIcon" @click="showLyrics">
 			</div>
 			<div class="playBar">
 				<div class="time">{{currentPlayTime}}</div>
@@ -56,13 +56,14 @@
 					:style="{left:`${volumeOffsetWidth}px`}"></div>
 				</div>
 			</div>
-			<img src="../../assets/img/playList.svg" alt="" >
+			<img  src="../../assets/img/playList.svg" alt="" class="operaIcon" >
 		</div>
 		
 	</div>
 </template>
 <script>
-
+import { ipcRenderer } from 'electron'
+import {bus} from '../Common/bus'
 export default {
     data() {
 		return {
@@ -81,11 +82,13 @@ export default {
 			getSongList:[{singId:1},{singId:2},{singId:3}],
 			songSrc:[{src:require('@/assets/img/test.mp3')},{src:require('@/assets/img/test2.mp3')},{src:require('@/assets/img/test3.mp3')}],
 			currentSongSrc:require('@/assets/img/test.mp3'),	
+			isShowLyrics: false,
 			}
 	},
 	mounted() {
 		this.endListener();
 		this.watchTime();
+		this.renderListener();
 	},
 	computed: {
 		processorOffsetWidth() {
@@ -126,10 +129,12 @@ export default {
 		playMusic(){
 			this.$refs.audio.play()
 			this.isplay = true;
+			localStorage.setItem('isplay',true) //todo 这里应该用仓库管理状态
 		},
 		pauseMusic() {
 			this.$refs.audio.pause()
 			this.isplay = false;
+			localStorage.setItem('isplay',false)
 		},
 		lastMusic() {
 			let playedSong = this.getSongList.pop();
@@ -140,6 +145,7 @@ export default {
 				this.$refs.audio.play()
 			}, 150);
 			this.isplay = true;
+			localStorage.setItem('isplay',true)
 		},
 		nextMusic() {
 			let playedSong = this.getSongList.shift();
@@ -150,6 +156,7 @@ export default {
 				this.$refs.audio.play()
 			}, 150);
 			this.isplay = true;
+			localStorage.setItem('isplay',true)
 		},
 		collectSong(){
 			this.song.isCollect = !this.song.isCollect
@@ -198,7 +205,6 @@ export default {
 				let timeDisplay = Math.floor(this.$refs.audio.currentTime)
 				let timeDisplay2 = Math.floor(this.$refs.audio.duration)
 				this.processMoveX = timeDisplay/timeDisplay2 * 400
-				console.log(this.processMoveX)
 				this.currentTime = this.processTime(timeDisplay)
 				this.musicTime = this.processTime(timeDisplay2)
 			});
@@ -208,6 +214,25 @@ export default {
 				this.musicTime = this.processTime(timeDisplay)
 			})
 
+		},
+		//浮框操作监听
+		renderListener(){
+			ipcRenderer.on('closeReply' ,() => {
+				this.isShowLyrics = false
+			})
+			ipcRenderer.on('lastMusic',() =>{
+				this.lastMusic()
+			})
+			ipcRenderer.on('playMusic',() =>{
+				this.playMusic()
+			})
+			ipcRenderer.on('pauseMusic',() => {
+				console.log('222222222222')
+				this.pauseMusic()
+			})
+			ipcRenderer.on('nextMusic',() => {
+				this.nextMusic()
+			})
 		},
 		processTime(timeDate) {
 			let minute =  Math.floor(timeDate / 60);
@@ -228,7 +253,18 @@ export default {
 			}
 		},
 		showDetails() {
-			this.$router.push('/playDetails')
+			// this.$router.push('/playDetails')
+			this.$emit('isShowDetails',true)
+		},
+		showLyrics() {
+			if(this.isShowLyrics === false){
+				ipcRenderer.send('createLyrics')
+				this.isShowLyrics = true
+			}
+			else{
+				ipcRenderer.send('closeLyrics')
+				this.isShowLyrics = false
+			}
 		}
 	},
 	directives:{

@@ -100,7 +100,16 @@ export default new Router({
         
     ]
     },
-    
+    {
+      path: '/playDetails',
+      name: 'playDetalis',
+      component: require('@/components/Home/playDetails').default
+    },
+    {
+      path: '/LyricsWin',
+      name: 'LyricsWin',
+      component: require('@/components/Common/LyricsWin').default
+    },
     {
       path: '*',
       redirect: '/'

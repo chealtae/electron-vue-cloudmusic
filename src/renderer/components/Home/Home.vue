@@ -3,7 +3,7 @@
         <div id="header">
             <basicHeader></basicHeader>
         </div>
-        <div id="main">
+        <div id="main" v-show="!showDetails">
             <sider-index id="main_aside" :style="shrinkStyle"></sider-index>
             <div id="main_line_control"  v-drag='{set:set}' @mouseup="setOldWidthVal">
             </div>
@@ -11,8 +11,11 @@
                 <router-view></router-view>     
             </div>
         </div>
+        <div class="songDetails" v-show="showDetails">
+            <play-details @isShowDetails="getMessage"></play-details>
+        </div>
         <div id="footer">
-            <play-bar></play-bar>
+            <play-bar @isShowDetails="getMessage"></play-bar>
         </div>
         
     </div>
@@ -22,19 +25,21 @@
 import basicHeader from '../BasicHeader/index'
 import SiderIndex from '../BasicSider/siderIndex.vue'
 import PlayBar from '../Common/playBar.vue'
+import PlayDetails from './playDetails.vue'
 export default {
     components:{
         basicHeader,
         SiderIndex,
         PlayBar,
+        PlayDetails,
     },
     data() {
         return {
             minAsideWidth: '220', 
             widthVal: '220',//存放要缩放元素实时变动值
             oldWidthVal: '220', //存放触发按下鼠标时的元素宽度
-            dragVal:0  //存放实时鼠标移动的距离
-
+            dragVal:0,  //存放实时鼠标移动的距离
+            showDetails:false
         }
     },
     computed: {
@@ -85,6 +90,10 @@ export default {
         },
         setOldWidthVal() {
             this.oldWidthVal = this.widthVal
+        },
+        getMessage(msg) {
+            console.log('222222222',msg)
+            this.showDetails = msg
         }
     }
 }
@@ -111,6 +120,12 @@ export default {
         flex: 1;
     }
 
+    .songDetails{
+        display: flex;
+        height: 100%;
+        flex: 1;
+        
+    }
     #main_line_control{
         display: inline-block;
         width: 11px;
