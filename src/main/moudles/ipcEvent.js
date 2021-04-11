@@ -67,21 +67,48 @@ function lastMusic() {
 function playMusic() {
     ipcMain.on('playMusic', () => {
         let wins = BrowserWindow.getAllWindows();
-        wins[0].webContents.send('playMusic','true') //第一个窗口肯定是主页面窗口 第二个一定是浮框
+        wins[0].webContents.send('playMusic','true') 
     })
 }
 // 暂停
 function pauseMusic() {
     ipcMain.on('pauseMusic', () => {
         let wins = BrowserWindow.getAllWindows();
-        wins[0].webContents.send('pauseMusic','true') //第一个窗口肯定是主页面窗口 第二个一定是浮框
+        wins[0].webContents.send('pauseMusic','true') 
+    })
+}
+// 播放主界面传递
+function playMusicfromHome() {
+    ipcMain.on('playMusicfromHome', () => {
+        let wins = BrowserWindow.getAllWindows();
+        if(wins[1]){
+            wins[1].webContents.send('playMusicfromHome','true') 
+        }
+    })
+}
+// 暂停主界面传递
+function pauseMusicfromHome() {
+    ipcMain.on('pauseMusicfromHome', () => {
+        let wins = BrowserWindow.getAllWindows();
+        if(wins[1]){
+            wins[1].webContents.send('pauseMusicfromHome','true') 
+        }
     })
 }
 // 下一首
 function nextMusic() {
     ipcMain.on('nextMusic', () => {
         let wins = BrowserWindow.getAllWindows();
-        wins[0].webContents.send('nextMusic','true') //第一个窗口肯定是主页面窗口 第二个一定是浮框
+        wins[0].webContents.send('nextMusic','true') 
+    })
+}
+// 歌词同步
+function currentlyrics() {
+    ipcMain.on('currentlyrics' ,(event,arg) =>{
+        let wins = BrowserWindow.getAllWindows();
+        if(wins[1]){
+            wins[1].webContents.send('currentlyrics',arg)
+        }
     })
 }
 
@@ -96,6 +123,9 @@ function ipcEventListener() {
     playMusic()
     pauseMusic()
     nextMusic()
+    currentlyrics()
+    playMusicfromHome()
+    pauseMusicfromHome()
 }
 export {
     ipcEventListener,

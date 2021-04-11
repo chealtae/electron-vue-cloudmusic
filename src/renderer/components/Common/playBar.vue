@@ -63,7 +63,7 @@
 </template>
 <script>
 import { ipcRenderer } from 'electron'
-import {bus} from '../Common/bus'
+import Bus from '../Common/bus'
 export default {
     data() {
 		return {
@@ -77,18 +77,21 @@ export default {
 			isplay:false,
 			isMute:false,
 			playStyle:localStorage.getItem('playStyle')? localStorage.getItem('playStyle'):"list",//默认列表播放
-			song:{singId:1,songName:'爱就一个字11111',singer:'傲七爷',isCollect:false},
+			song:{singId:1,songName:'爱就一个字11111',singer:'傲七爷',isCollect:false,edition:'爱就一个字（女声版）'},
 			visible: false,
 			getSongList:[{singId:1},{singId:2},{singId:3}],
 			songSrc:[{src:require('@/assets/img/test.mp3')},{src:require('@/assets/img/test2.mp3')},{src:require('@/assets/img/test3.mp3')}],
 			currentSongSrc:require('@/assets/img/test.mp3'),	
 			isShowLyrics: false,
+			lyric:"[00:04.538]作词：陈家丽\n[00:06.547]作曲：Jean-Michel Ou\n[00:08.555]编曲：田宸光\n[00:10.063]录音：傲七爷\n[00:11.567]和声：傲七爷/王淑霖\n[00:13.324]混音：任天宇\n[00:15.082]制作人：李永江\n[00:16.587]监制：刘家泽/李永江\n[00:18.093]\n[00:23.718]拨开天空的乌云\n[00:27.732]像蓝丝绒一样美丽\n[00:31.747]我为你翻山越岭\n[00:35.509]却无心看风景\n[00:38.769]我想你身不由己\n[00:43.584]每个念头有新的梦境\n[00:46.847]但愿你没忘记\n[00:51.114]我永远保护你\n[00:53.624]不管风雨的打击全心全意\n[00:59.644]两个人相互辉映\n[01:03.658]光芒胜过夜晚繁星\n[01:07.673]我为你翻山越岭\n[01:11.436]却无心看风景\n[01:14.700]我想你鼓足勇气\n[01:19.468]凭爱情地图散播讯息\n[01:22.729]但愿你没忘记\n[01:26.995]我永远保护你\n[01:29.507]从此不必再流浪找寻\n[01:34.528]爱就一个字\n[01:36.537]我只说一次\n[01:38.796]你知道我只会用行动表示\n[01:42.561]烟花太放肆\n[01:44.566]守住了坚持\n[01:47.578]看我为你孤注一掷\n[01:50.340]爱就一个字\n[01:52.601]我只说一次\n[01:54.610]恐怕听见的人勾起了相思\n[01:58.372]热闹的城市\n[02:00.382]搜索你的影子\n[02:03.396]让你幸福我愿意试\n[02:23.711]两个人相互辉映\n[02:27.478]光芒胜过夜晚繁星\n[02:31.496]我为你翻山越岭\n[02:35.258]却无心看风景\n[02:38.520]我想你鼓足勇气\n[02:43.542]凭爱情地图散播讯息\n[02:46.554]但愿你没忘记\n[02:51.073]我永远保护你\n[02:53.584]从此不必再流浪找寻\n[02:58.352]爱就一个字\n[03:00.610]我只说一次\n[03:02.868]你知道我只会用行动表示\n[03:06.635]烟花太放肆\n[03:08.391]守住了坚持\n[03:11.405]看我为你孤注一掷\n[03:14.417]爱就一个字\n[03:16.675]我只说一次\n[03:18.682]恐怕听见的人勾起了相思\n[03:22.449]热闹的城市\n[03:24.455]搜索你的影子\n[03:27.468]让你幸福我愿意试\n[03:32.738]爱就一个字\n[03:34.491]我只说一次\n[03:36.501]你知道我只会用行动表示\n[03:40.515]烟花太放肆\n[03:42.524]守住了坚持\n[03:45.537]看我为你孤注一掷\n[03:48.512]爱就一个字\n[03:50.520]我只说一次\n[03:52.781]恐怕听见的人勾起了相思\n[03:56.543]热闹的城市\n[03:58.550]搜索你的影子\n[04:01.564]让你幸福是我一生在乎的事\n",
+            lrcArray : []//新建数组,用于存放歌词
 			}
 	},
 	mounted() {
 		this.endListener();
 		this.watchTime();
 		this.renderListener();
+		this.processLyrics();
 	},
 	computed: {
 		processorOffsetWidth() {
@@ -130,11 +133,15 @@ export default {
 			this.$refs.audio.play()
 			this.isplay = true;
 			localStorage.setItem('isplay',true) //todo 这里应该用仓库管理状态
+			Bus.$emit('playMusic',true)
+			ipcRenderer.send('playMusicfromHome')
 		},
 		pauseMusic() {
 			this.$refs.audio.pause()
 			this.isplay = false;
 			localStorage.setItem('isplay',false)
+			Bus.$emit('pauseMusic',true)
+			ipcRenderer.send('pauseMusicfromHome',true)
 		},
 		lastMusic() {
 			let playedSong = this.getSongList.pop();
@@ -146,6 +153,7 @@ export default {
 			}, 150);
 			this.isplay = true;
 			localStorage.setItem('isplay',true)
+			// Bus.$emit('lastMusic',true) //要传过去歌曲对象
 		},
 		nextMusic() {
 			let playedSong = this.getSongList.shift();
@@ -157,6 +165,8 @@ export default {
 			}, 150);
 			this.isplay = true;
 			localStorage.setItem('isplay',true)
+			Bus.$emit('pauseMusic',true)
+			// Bus.$emit('nextMusic',true) //要传过去歌曲对象
 		},
 		collectSong(){
 			this.song.isCollect = !this.song.isCollect
@@ -201,12 +211,36 @@ export default {
 		},
 		//监听时间变化
 		watchTime() {
+			let lrcId = 0; //
+			let flag = 0;
 			this.$refs.audio.addEventListener('timeupdate',() => {
 				let timeDisplay = Math.floor(this.$refs.audio.currentTime)
 				let timeDisplay2 = Math.floor(this.$refs.audio.duration)
 				this.processMoveX = timeDisplay/timeDisplay2 * 400
 				this.currentTime = this.processTime(timeDisplay)
 				this.musicTime = this.processTime(timeDisplay2)
+
+				//处理歌词
+				if(this.lrcArray[lrcId].t < timeDisplay && this.lrcArray[lrcId+1].t > timeDisplay){
+					// 发送当前歌词index
+					if(flag === 0){
+						// console.log(lrcId)
+						Bus.$emit('lrcId',lrcId)
+						ipcRenderer.send('currentlyrics',lrcId)
+					}
+					flag++
+				} else if(this.lrcArray[lrcId].t < timeDisplay && this.lrcArray[lrcId+1].t < timeDisplay){
+					while(this.lrcArray[lrcId+1].t < timeDisplay && lrcId < this.lrcArray.length-1){
+						lrcId++
+					}
+					flag = 0;
+				} else if (this.lrcArray[lrcId].t > timeDisplay){
+					while(this.lrcArray[lrcId].t > timeDisplay && lrcId > 0){
+						lrcId--
+					}
+					flag = 0;
+				}
+				
 			});
 
 			this.$refs.audio.addEventListener('durationchange ', () => {
@@ -255,6 +289,8 @@ export default {
 		showDetails() {
 			// this.$router.push('/playDetails')
 			this.$emit('isShowDetails',true)
+			Bus.$emit('playState',this.isplay) //todo传入歌曲对象 包括歌词？
+			Bus.$emit('songInfo',this.song)
 		},
 		showLyrics() {
 			if(this.isShowLyrics === false){
@@ -265,7 +301,25 @@ export default {
 				ipcRenderer.send('closeLyrics')
 				this.isShowLyrics = false
 			}
-		}
+		},
+		processLyrics() {
+            let lrcGet = this.lyric;//提取歌词
+            // console.log(lrcGet);
+            let lrc = lrcGet.split('\n');
+            // console.log(lrc);
+
+            lrc.forEach((item) => {
+                let timeStr = item.substring(item.indexOf('[')+1,item.indexOf(']'));//提取时间
+                let min = parseInt(timeStr.split(':')[0])*60;
+                let sec = parseFloat(timeStr.split(':')[1]);
+                let time = parseFloat((min + sec).toFixed(2));
+                this.lrcArray.push({
+                    t: time,
+                    c: item.substring(item.indexOf(']') + 1)
+                });
+            })
+            console.log(this.lrcArray)
+        }
 	},
 	directives:{
 		drag(el,bindling){
