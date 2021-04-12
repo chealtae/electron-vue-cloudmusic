@@ -10,7 +10,10 @@ Vue.use(ElementUI);
 import './assets/main.css'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-Vue.http = Vue.prototype.$http = axios
+// Vue.prototype.$base_url = 'http://localhost:8888';
+//默认配置端口
+axios.defaults.baseURL='http://localhost:8888/';
+Vue.axios = Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
