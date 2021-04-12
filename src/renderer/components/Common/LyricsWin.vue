@@ -43,7 +43,7 @@ export default {
         },
         pauseMusic() {
             ipcRenderer.send('pauseMusic')
-            this.isplay = false
+            this.isplay = 'false'
         },
         nextMusic() {
             ipcRenderer.send('nextMusic')
@@ -55,11 +55,11 @@ export default {
             })
             ipcRenderer.on('playMusicfromHome' ,() => {
                 console.log('2222222222222')
-                this.isplay = 'false'
+                this.isplay = 'true'
             })
             ipcRenderer.on('pauseMusicfromHome' ,(event,arg) => {
                 console.log('1111111111111111')
-                this.isplay = 'true'
+                this.isplay = 'false'
             })
         },
         processLyrics() {
