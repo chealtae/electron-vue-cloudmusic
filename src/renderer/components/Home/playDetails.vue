@@ -33,7 +33,9 @@
             </div>
             
         </div>
-        <comment></comment>
+        <div style="width:1000px;margin:0 auto;margin-top:20px">
+            <comment></comment>
+        </div>
     </div>
     
     
