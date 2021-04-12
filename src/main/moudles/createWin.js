@@ -60,9 +60,30 @@ function createLyrics() {
     })
 }
 
+function createLogin() {
+    ipcMain.on("createLogin",() => {
+        let loginWin = new BrowserWindow({
+            width: 350,
+            height: 300,
+            frame: false,
+            webPreferences: {
+                nodeIntegration: true,
+                // webSecurity: false
+            }
+        })
+        loginWin.webContents.closeDevTools();
+        loginWin.loadURL(winURL + '#/LoginWin');
+        loginWin.on('close', () => {
+            loginWin = null
+        })
+
+    })
+}
+
 function createWinListener() {
     createMessage();
     createLyrics();
+    createLogin();
 }
 export {
     createWinListener

@@ -111,6 +111,11 @@ export default new Router({
       component: require('@/components/Common/LyricsWin').default
     },
     {
+      path: '/LoginWin',
+      name: 'LoginWin',
+      component: require('@/components/Common/login').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

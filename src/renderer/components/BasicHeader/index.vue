@@ -10,8 +10,12 @@
             111
         </div>
         <div id="top_bar_meun">
-            <div class="meun_item">
+            <div class="meun_item_1">
                 <!-- <userInfo></userInfo> -->
+                <img v-if="loginFlag ==='null'" src="../../assets/img/profilePhoto.svg" alt=""  style="float:left" @click="login">
+                <img v-else :src="user.profile" alt="" class="profile_photo">
+                <span v-if="loginFlag ==='null'" class="login_span"  @click="login">未登录</span>
+                <span v-else class="login_span">{{user.username}}</span>
             </div>
             <div class="meun_item">
                 <!-- <setting></setting> -->
@@ -38,14 +42,26 @@ export default {
     components: {
         frameIcon,
     },
+    data() {
+        return {
+            loginFlag:localStorage.getItem('userId')||'null',
+            user:{profile:'',userid:'',userType:'',username:''}
+        }
+    },
     methods: {
         createMessageWin() {
             ipcRenderer.send('createMessage')
+        },
+        login() {
+            ipcRenderer.send('createLogin')
         }
+    },
+    mounted() {
+        console.log(this.loginFlag)
     }
 }
 </script>
-<style>
+<style scoped>
     #top_bar {
         background: rgba(133, 202, 211, 0.616);
         height: 63px;
@@ -74,6 +90,10 @@ export default {
         height: 23px;
         cursor: pointer;
     }
+    .meun_item_1{
+        width: 100px;
+        height: 23px;
+    }
 
     .icon_style{
         font-size: 22px;
@@ -88,5 +108,17 @@ export default {
         width: 1px;
         height: 1em;
         margin: 0 8px;
+    }
+
+    .profile_photo{
+        cursor: pointer;
+        border-radius: 50%;
+    }
+    .login_span{
+        cursor: pointer;
+        font-size: 14px;
+        display: block;
+        margin-top: 5px;
+        margin-left: 30px;
     }
 </style>
