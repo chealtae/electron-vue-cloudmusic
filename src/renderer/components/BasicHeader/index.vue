@@ -58,6 +58,16 @@ export default {
     },
     mounted() {
         console.log(this.loginFlag)
+        ipcRenderer.on('userLogin',() => {
+            this.$axios.get(``,Number(localStorage.getItem('userId'))).then((res) => {
+                if(res.data.success){
+                    let info = res.data
+                    this.user.userType = info.userType;
+                    this.user.profile = info.image;
+                    this.user.username = info.nickName; 
+                }
+            })
+        })
     }
 }
 </script>

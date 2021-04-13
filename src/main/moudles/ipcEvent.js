@@ -1,7 +1,8 @@
 import {
 	app,
 	ipcMain,
-	BrowserWindow
+	BrowserWindow,
+    ipcRenderer
 } from 'electron'
 
 var mainWin = BrowserWindow.getFocusedWindow();
@@ -119,6 +120,13 @@ function closeLogin() {
     })
 }
 
+function userLogin(){
+    ipcRenderer.on('userLogin',() => {
+        let wins = BrowserWindow.getAllWindows();
+        wins[0].webContents.send('userLogin') 
+    })
+}
+
 //监听渲染进程的消息
 function ipcEventListener() {
     closeWindows()
@@ -134,6 +142,7 @@ function ipcEventListener() {
     playMusicfromHome()
     pauseMusicfromHome()
     closeLogin()
+    userLogin()
 }
 export {
     ipcEventListener,
