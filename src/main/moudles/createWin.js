@@ -64,7 +64,7 @@ function createLogin() {
     ipcMain.on("createLogin",() => {
         let loginWin = new BrowserWindow({
             width: 350,
-            height: 300,
+            height: 350,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,
@@ -73,10 +73,6 @@ function createLogin() {
         })
         loginWin.webContents.closeDevTools();
         loginWin.loadURL(winURL + '#/LoginWin');
-        loginWin.on('close', () => {
-            loginWin = null
-        })
-
     })
 }
 

@@ -112,6 +112,13 @@ function currentlyrics() {
     })
 }
 
+function closeLogin() {
+    ipcMain.on('closeLogin',() => {
+        let win = BrowserWindow.getFocusedWindow();
+        win.close()
+    })
+}
+
 //监听渲染进程的消息
 function ipcEventListener() {
     closeWindows()
@@ -126,6 +133,7 @@ function ipcEventListener() {
     currentlyrics()
     playMusicfromHome()
     pauseMusicfromHome()
+    closeLogin()
 }
 export {
     ipcEventListener,

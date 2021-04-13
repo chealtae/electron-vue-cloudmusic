@@ -1,23 +1,26 @@
 <template>
-    <div class="login_main">
+    <div>
         <div>
             <i class="el-icon-close" @click="closeWin" ></i>
         </div>
-        <div class="login_form">
-            <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-loginForm">
+        <div class="logon_form">
+            <el-form :model="logonForm" status-icon :rules="rules" ref="logonForm" label-width="100px" class="demo-logonForm">
                 <el-form-item label="邮箱账号" prop="username">
-                    <el-input  v-model="loginForm.username" class="form_input"></el-input>
+                    <el-input  v-model="logonForm.username" class="form_input"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
-                    <el-input type="password" v-model="loginForm.password"  class="form_input"></el-input>
+                    <el-input type="password" v-model="logonForm.password"  class="form_input"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="checkpassword">
+                    <el-input type="password" v-model="logonForm.checkpassword"  class="form_input"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-                    <el-button @click="resetForm('loginForm')">重置</el-button>
+                    <el-button type="primary" @click="submitForm('logonForm')">注册</el-button>
+                    <el-button @click="resetForm('logonForm')">重置</el-button>
                 </el-form-item>
                 <div style="text-align:center">
                     <span class ="logon_span" @click="logon">
-                        注册
+                        登录
                     </span>
                 </div>
             </el-form>
@@ -25,15 +28,26 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
 import { ipcRenderer } from 'electron';
 export default {
     data() {
-        return {
-            loginForm:{username:'',password:''},
+         var validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+            callback(new Error('请再次输入密码'));
+            } else if (value !== this.logonForm.password) {
+            callback(new Error('两次输入密码不一致!'));
+            } else {
+            callback();
+            }
+        };
+        return{
+            logonForm:{username:'',password:'',checkpassword:''},
             rules:{
                 password: [
                     {required: true, message: '请输入密码',trigger: 'blur' }
+                ],
+                checkpassword: [
+                    { validator: validatePass2, trigger: 'blur' }
                 ],
                 username: [
                     { required: true, message: '请输入邮箱地址', trigger: 'blur' },
@@ -43,18 +57,23 @@ export default {
         }
     },
     methods: {
+        closeWin() {
+            ipcRenderer.send('closeLogin')
+        },
+        logon() {
+            this.$router.push('/loginWin')
+        },
         resetForm(formName) {
             this.$refs[formName].resetFields();
+            this.checkpassword = ''
         },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    this.$axios.post(`User/login`,this.loginForm).then((res) => {
+                    this.$axios.post(`User/logon`,this.logonForm).then((res) => {
                         if(res.data.success){
                             this.$message.success(res.data.message)
-                            localStorage.setItem('userId',res.data.message)//存入的是字符串
-                            this.closeWin();
-                            ipcRenderer.send('userLogin')
+                            this.$router.push('/loginWin')
                         }
                         else{
                             this.$message.error(res.data.message)
@@ -65,12 +84,6 @@ export default {
                 } 
             });
         },
-        closeWin() {
-            ipcRenderer.send('closeLogin')
-        },
-        logon(){
-            this.$router.push('/logonWin')
-        }
     }
 }
 </script>
@@ -80,7 +93,7 @@ export default {
         font-size: 16px;
         float: right;
     }
-    .login_form{
+    .logon_form{
         padding-top: 50px;
     }
     .form_input{

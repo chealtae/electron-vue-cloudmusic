@@ -116,6 +116,11 @@ export default new Router({
       component: require('@/components/Common/login').default
     },
     {
+      path: '/LogonWin',
+      name: 'LogonWin',
+      component: require('@/components/Common/logon').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
