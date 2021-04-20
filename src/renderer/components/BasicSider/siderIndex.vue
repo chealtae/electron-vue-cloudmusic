@@ -96,6 +96,18 @@ export default {
             isActived: 'findMusic'
         }
     },
+    mounted() {
+        if(localStorage.getItem('userId')){
+            let userInfo ={
+                userId:Number(localStorage.getItem('userId'))
+            }
+            this.$axios.post(`SongListInfo/getCreateList`,userInfo).then((res) => {
+                if(res.data.success){
+                    this.createdItemList = res.data.listid;
+                }
+            })
+        }
+    },
     methods: {
         findMusicClick(){
             this.isActived = 'findMusic';

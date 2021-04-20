@@ -15,7 +15,7 @@
                 <img v-if="loginFlag ==='null'" src="../../assets/img/profilePhoto.svg" alt=""  style="float:left" @click="login">
                 <img v-else :src="user.profile" alt="" class="profile_photo">
                 <span v-if="loginFlag ==='null'" class="login_span"  @click="login">未登录</span>
-                <span v-else class="login_span">{{user.username}}</span>
+                <span v-else class="login_span" @click="showDetails">{{user.username}}</span>
             </div>
             <div class="meun_item">
                 <!-- <setting></setting> -->
@@ -38,6 +38,7 @@
 <script>
 import { ipcRenderer } from 'electron'
 import frameIcon from './FrameIcon'
+import {getImgSrc} from '../Common/getSrc'
 export default {
     components: {
         frameIcon,
@@ -54,19 +55,28 @@ export default {
         },
         login() {
             ipcRenderer.send('createLogin')
+        },
+        getInfo(){
+            this.$axios.get(`User/getUserInfo?userId=`+ this.loginFlag).then((res) => {
+                if(res.data.success){
+                    let info = res.data.userInfo
+                    this.user.userType = info.userType;
+                    this.user.profile = getImgSrc(info.image) ;
+                    this.user.username = info.nickname?info.nickname:'用户'+info.id; 
+                }
+            })
+        },
+        showDetails() {
+            this.$emit('userDetails',true)
         }
     },
     mounted() {
         console.log(this.loginFlag)
+        this.getInfo()
         ipcRenderer.on('userLogin',() => {
-            this.$axios.get(``,Number(localStorage.getItem('userId'))).then((res) => {
-                if(res.data.success){
-                    let info = res.data
-                    this.user.userType = info.userType;
-                    this.user.profile = info.image;
-                    this.user.username = info.nickName; 
-                }
-            })
+            this.loginFlag = Number(localStorage.getItem('userId'))
+            this.getInfo()
+            //登录后也要触发刷新
         })
     }
 }
@@ -123,6 +133,9 @@ export default {
     .profile_photo{
         cursor: pointer;
         border-radius: 50%;
+        width: 23px;
+        height: 23px;
+        float: left;
     }
     .login_span{
         cursor: pointer;
@@ -130,5 +143,6 @@ export default {
         display: block;
         margin-top: 5px;
         margin-left: 30px;
+        
     }
 </style>

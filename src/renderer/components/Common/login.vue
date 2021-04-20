@@ -52,7 +52,7 @@ export default {
                     this.$axios.post(`User/login`,this.loginForm).then((res) => {
                         if(res.data.success){
                             this.$message.success(res.data.message)
-                            localStorage.setItem('userId',res.data.message)//存入的是字符串
+                            localStorage.setItem('userId',res.data.userId)//存入的是字符串
                             this.closeWin();
                             ipcRenderer.send('userLogin')
                         }

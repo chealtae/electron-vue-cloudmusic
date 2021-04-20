@@ -121,7 +121,7 @@ function closeLogin() {
 }
 
 function userLogin(){
-    ipcRenderer.on('userLogin',() => {
+    ipcMain.on('userLogin',() => {
         let wins = BrowserWindow.getAllWindows();
         wins[0].webContents.send('userLogin') 
     })
