@@ -39,6 +39,7 @@
 import { ipcRenderer } from 'electron'
 import frameIcon from './FrameIcon'
 import {getImgSrc} from '../Common/getSrc'
+import Bus from '../Common/bus'
 export default {
     components: {
         frameIcon,
@@ -67,7 +68,7 @@ export default {
             })
         },
         showDetails() {
-            this.$emit('userDetails',true)
+            Bus.$emit('userDetails',true)
         }
     },
     mounted() {

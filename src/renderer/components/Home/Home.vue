@@ -7,9 +7,13 @@
             <sider-index id="main_aside" :style="shrinkStyle"></sider-index>
             <div id="main_line_control"  v-drag='{set:set}' @mouseup="setOldWidthVal">
             </div>
+            <div id="userDeatils" v-show="showUser">
+                <logout @isShowUser="getMessage"></logout>
+            </div>
             <div id="pagecontent">
                 <router-view></router-view>     
             </div>
+            
         </div>
         <div class="songDetails" v-show="showDetails">
             <play-details @isShowDetails="getMessage"></play-details>
@@ -24,14 +28,17 @@
 
 import basicHeader from '../BasicHeader/index'
 import SiderIndex from '../BasicSider/siderIndex.vue'
+import Logout from '../Common/logout.vue'
 import PlayBar from '../Common/playBar.vue'
 import PlayDetails from './playDetails.vue'
+import Bus from '../Common/bus'
 export default {
     components:{
         basicHeader,
         SiderIndex,
         PlayBar,
         PlayDetails,
+        Logout,
     },
     data() {
         return {
@@ -39,7 +46,8 @@ export default {
             widthVal: '220',//存放要缩放元素实时变动值
             oldWidthVal: '220', //存放触发按下鼠标时的元素宽度
             dragVal:0,  //存放实时鼠标移动的距离
-            showDetails:false
+            showDetails:false,
+            showUser:false,
         }
     },
     computed: {
@@ -82,6 +90,7 @@ export default {
     },
     mounted() {
         this.$router.push('/recommend')
+        this.busListener();
     },
     methods: {
         set(l) {
@@ -92,8 +101,17 @@ export default {
             this.oldWidthVal = this.widthVal
         },
         getMessage(msg) {
-            console.log('222222222',msg)
             this.showDetails = msg
+        },
+        getUserMessage(msg){
+            console.log(msg)
+            this.showUser = msg;
+            
+        },
+        busListener(){
+            Bus.$on('userDetails', () =>{
+                this.showUser = !this.showUser;
+            });
         }
     }
 }
@@ -148,5 +166,10 @@ export default {
         width: 100%;
         border-top: 1px solid rgba(141, 139, 139, 0.507);
         z-index: 10;
+    }
+
+    #userDeatils{
+        position: fixed;
+        z-index: 20;
     }
 </style>

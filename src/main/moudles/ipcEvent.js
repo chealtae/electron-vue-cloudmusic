@@ -126,6 +126,12 @@ function userLogin(){
         wins[0].webContents.send('userLogin') 
     })
 }
+function restart(){
+    ipcMain.on('restart',() => {
+        let win = BrowserWindow.getFocusedWindow();
+        win.webContents.reload();
+    })
+}
 
 //监听渲染进程的消息
 function ipcEventListener() {
@@ -143,6 +149,7 @@ function ipcEventListener() {
     pauseMusicfromHome()
     closeLogin()
     userLogin()
+    restart()
 }
 export {
     ipcEventListener,
