@@ -121,6 +121,11 @@ export default new Router({
       component: require('@/components/Common/logon').default
     },
     {
+      path: '/createListWin',
+      name: 'createListWin',
+      component: require('@/components/Common/createListWin').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

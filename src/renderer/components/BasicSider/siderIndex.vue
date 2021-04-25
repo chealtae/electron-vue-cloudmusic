@@ -34,12 +34,15 @@
             <el-submenu index="1" >
                 <template slot="title" >
                     <div class="sider_menu_title">
-                        <slot >创建的歌单</slot>
+                        <slot >创建的歌单 
+                            <i class="el-icon-plus" @click="createlist"></i>
+                        </slot>
                     </div>
                 </template>
-                <el-menu-item v-for="createdItem in createdItemList" :key="createdItem.playListsId" @click="playlistClick">
-                    <span class="sider_menu_item">
-                        {{createdItem.playlistsName}}
+                <el-menu-item v-for="createdItem in createdItemList" :key="createdItem.playListsId"
+                    @click="playlistClick" >
+                    <span class="sider_menu_item" @contextmenu="rightClick($event,createdItem.id)">
+                        {{createdItem.name}}
                     </span>
                 </el-menu-item>
             </el-submenu>
@@ -56,10 +59,17 @@
                     </el-menu-item>
             </el-submenu>
         </el-menu>
-        
+        <div v-show="menuVisible">
+                <ul id="menu" class="menu">
+                    <li class="menu_item">播放</li>
+                    <li class="menu_item" >编辑歌单</li>
+                    <li class="menu_item" @click="deleteList">删除歌单</li>
+                </ul>
+            </div>
     </div>
 </template>
 <script>
+import { ipcRenderer } from 'electron'
 export default {
     data() {
         return {
@@ -93,7 +103,14 @@ export default {
             radioStationStatus: false,
             myCollectStatus: false,
             playlistStatus: false,
-            isActived: 'findMusic'
+            isActived: 'findMusic',
+            currentListId:'',
+            menuVisible: false,
+                productTypes: [],
+                defaultProps: {
+                    children: 'children',
+                    label: 'name'
+                }
         }
     },
     mounted() {
@@ -107,8 +124,58 @@ export default {
                 }
             })
         }
+        this.ipcListener();
     },
     methods: {
+        deleteList(){
+            this.$axios.get(`/SongListInfo/deleteSongList?songListId=` + this.currentListId).then((res) => {
+                if(res.data.success){
+                    this.$message.success("删除歌单成功")
+                    this.getSongList();//刷新界面
+                } else {
+                    this.$message.error("删除歌单失败")
+                }
+            })
+        },
+        showOperation() {
+            console.log('222222')
+        },
+        //右键点击
+        rightClick(MouseEvent,id) { // 鼠标右击触发事件
+            this.menuVisible = false // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
+            this.menuVisible = true  // 显示模态窗口，跳出自定义菜单栏
+            var menu = document.querySelector('#menu')
+            document.addEventListener('click', this.foo) // 给整个document添加监听鼠标事件，点击任何位置执行foo方法
+            menu.style.display = "block";
+            menu.style.left = MouseEvent.clientX - 0 + 'px'
+            menu.style.top = MouseEvent.clientY - 80 + 'px'
+            this.currentListId = id;//存放当前点击的歌单id
+            
+        },
+        foo() { // 取消鼠标监听事件 菜单栏
+            this.menuVisible = false
+            document.removeEventListener('click', this.foo) // 要及时关掉监听，不关掉的是一个坑，不信你试试，虽然前台显示的时候没有啥毛病，加一个alert你就知道了
+        },
+        createlist(){
+            ipcRenderer.send('createMusicList')
+        },
+        ipcListener(){
+            //创建歌单后刷新界面
+            ipcRenderer.on('createNewList',() => {
+                this.getSongList();
+            })
+        },
+        getSongList(){
+            let userInfo ={
+                userId:Number(localStorage.getItem('userId'))
+            }
+            // console.log('接收刷新消息');
+            this.$axios.post(`SongListInfo/getCreateList`,userInfo).then((res) => {
+                if(res.data.success){
+                    this.createdItemList = res.data.listid;
+                }
+            })
+        },
         findMusicClick(){
             this.isActived = 'findMusic';
             this.changeStatus();
@@ -401,4 +468,26 @@ export default {
         position: relative;
         margin-left: -19px;
     }
+    .sider_menu_title .el-icon-plus{
+        font-size: 16px;
+            margin-top: -4px;
+    }
+    .menu {
+        
+        width:120px;
+        position: absolute;
+        border-radius: 3px;
+        background-color: #f4f4f4;
+        z-index: 20;
+        text-align: center;
+        box-shadow: 1px 2px 6px 0px #c1baba;
+    }
+
+    .menu li:hover {
+        background-color: #1790ff;
+        color: white;
+        cursor: pointer;
+    }
+    .menu li{font-size:15px;
+    list-style: none}
 </style>

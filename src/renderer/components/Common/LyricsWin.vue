@@ -54,11 +54,9 @@ export default {
                 this.currentLrc = arg
             })
             ipcRenderer.on('playMusicfromHome' ,() => {
-                console.log('2222222222222')
                 this.isplay = 'true'
             })
             ipcRenderer.on('pauseMusicfromHome' ,(event,arg) => {
-                console.log('1111111111111111')
                 this.isplay = 'false'
             })
         },

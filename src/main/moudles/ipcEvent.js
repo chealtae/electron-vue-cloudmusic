@@ -126,10 +126,20 @@ function userLogin(){
         wins[0].webContents.send('userLogin') 
     })
 }
+
+//登录后页面重启，刷新数据
 function restart(){
     ipcMain.on('restart',() => {
         let win = BrowserWindow.getFocusedWindow();
         win.webContents.reload();
+    })
+}
+
+//刷新创建歌单列表
+function createNewList() {
+    ipcMain.on('createNewList', () => {
+        let wins = BrowserWindow.getAllWindows();
+        wins[0].webContents.send('createNewList')
     })
 }
 
@@ -150,6 +160,7 @@ function ipcEventListener() {
     closeLogin()
     userLogin()
     restart()
+    createNewList()
 }
 export {
     ipcEventListener,

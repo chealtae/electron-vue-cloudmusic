@@ -127,7 +127,7 @@ export default {
 			this.volumeMoveX = e.offsetX
 			this.$refs.audio.volume  = this.volumeMoveX/50 
 			localStorage.setItem('volume',this.volumeMoveX)
-			console.log('moveX',this.processMoveX)
+			// console.log('moveX',this.processMoveX)
 		},
 		playMusic(){
 			this.$refs.audio.play()
@@ -147,7 +147,6 @@ export default {
 			let playedSong = this.getSongList.pop();
 			this.getSongList.unshift(playedSong) //把播放完的音乐移动到数组t头部
 			this.currentSongSrc = this.songSrc[this.getSongList[0].singId-1].src; //todo 这里直接删掉 ，改用请求过来的数据
-			console.log(11111,this.currentSongSrc)
 			setTimeout(() => { //todo 异步后应该不需要再用定时器
 				this.$refs.audio.play()
 			}, 150);
@@ -159,7 +158,7 @@ export default {
 			let playedSong = this.getSongList.shift();
 			this.getSongList.push(playedSong) //把播放完的音乐移动到数组尾部
 			this.currentSongSrc = this.songSrc[this.getSongList[0].singId-1].src; //todo 这里直接删掉 ，改用请求过来的数据
-			console.log(11111,this.currentSongSrc)
+			// console.log(11111,this.currentSongSrc)
 			setTimeout(() => { //todo 异步后应该不需要再用定时器
 				this.$refs.audio.play()
 			}, 150);
@@ -261,7 +260,6 @@ export default {
 				this.playMusic()
 			})
 			ipcRenderer.on('pauseMusic',() => {
-				console.log('222222222222')
 				this.pauseMusic()
 			})
 			ipcRenderer.on('nextMusic',() => {

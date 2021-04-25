@@ -76,10 +76,30 @@ function createLogin() {
     })
 }
 
+function createMusicList() {
+    ipcMain.on("createMusicList",() => {
+        let createListWin = new BrowserWindow({
+            width: 350,
+            height: 250,
+            frame: false,
+            webPreferences: {
+                nodeIntegration: true,
+            }
+        })
+        createListWin.webContents.closeDevTools();
+        createListWin.loadURL(winURL + '#/createListWin');
+        createListWin.on('blur', () => {
+            createListWin.close()
+        })
+    })
+    
+}
+
 function createWinListener() {
     createMessage();
     createLyrics();
     createLogin();
+    createMusicList();
 }
 export {
     createWinListener
