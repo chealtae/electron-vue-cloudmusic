@@ -106,6 +106,7 @@
 </template>
 <script>
 import Comment from '../Common/Comment.vue';
+import Bus from '../Common/bus'
 export default {
     components:{
         Comment,
@@ -114,6 +115,7 @@ export default {
         return {
             playListStatus:true,
             commentStatus:false,
+            listId:'',
             isMine:false,
             isCollect:true,
             commentNumber:7788,
@@ -147,6 +149,18 @@ export default {
             collect:true},]
         }
     },
+    mounted(){
+        if(this.$route.query){
+            this.listId = this.$route.query.id;
+            this.isMine = this.$route.query.isAuthor;
+            this.$axios.get(`SongListInfo/getSongListInfo?listId=${this.listId}`).then((res) => {
+                if(res.data.success){
+                    this.createdItemList = res.data.listid;
+                }
+            })
+        }
+        this.busListener();
+    },
     methods: {
         handleClick(tab, event) {
             console.log(tab, event);
@@ -165,6 +179,15 @@ export default {
         playListClick(){
             this.commentStatus = false;
             this.playListStatus = true;
+        },
+        busListener(){
+            Bus.$on('playListItem', (state) =>{
+                this.listId = state.id;
+                this.isMine = state.isAuthor;
+            });
+        },
+        getDetails(id){
+
         }
     }
 }
