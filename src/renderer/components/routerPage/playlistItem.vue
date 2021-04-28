@@ -2,13 +2,13 @@
     <div class="mian_content">
         <div class='introduce_header'>
             <div class="introduce_img">
-                <img :src="playListDeatils.url" alt="" style="height:100%; width:100%">
+                <img :src="playListDeatils.image" alt="" style="height:100%; width:100%">
             </div>
             <div class="introduce_content">
                 <div class="title">
                     <div class="deatil_type">
                         <span class="type_span">
-                            {{playListDeatils.type}}
+                            歌单
                         </span>
                     </div>
                     <div class="playListName">
@@ -23,15 +23,15 @@
                         {{playListDeatils.author}}
                     </span>
                     <span class="createTime_span">  
-                        {{playListDeatils.createdTime}}
+                        {{playListDeatils.createtime}}
                     </span>
                 </div>
                 <div class="opreation">
                     <el-row>
                         <el-button type="primary" size="small" round icon="el-icon-caret-right">播放全部</el-button>
-                        <el-button v-if="isCollect"  size="small" round icon="l-icon-folder-checked">已收藏({{playListDeatils.collectTime}})</el-button>
-                        <el-button v-else round size="small" icon="el-icon-folder-add" :disabled="isMine">收藏({{playListDeatils.collectTime}})</el-button>
-                        <el-button round size="small" icon="el-icon-share">分享({{playListDeatils.shareTime}})</el-button>
+                        <el-button v-if="isCollect"  size="small" round icon="l-icon-folder-checked">已收藏({{playListDeatils.totalcollect}})</el-button>
+                        <el-button v-else round size="small" icon="el-icon-folder-add" :disabled="isMine">收藏({{playListDeatils.totalcollect}})</el-button>
+                        <el-button round size="small" icon="el-icon-share">分享({{playListDeatils.totalshare}})</el-button>
                         <el-button round size="small" icon="el-icon-download">全部下载</el-button>
                     </el-row>
                 </div>
@@ -43,10 +43,10 @@
                     </div>
                 </div>
                 <div class="playtimes">
-                    <span>歌曲:{{playListDeatils.singNumber}} 播放:{{playListDeatils.playTimes}}</span>
+                    <span>歌曲:{{tableData.length}} &nbsp&nbsp&nbsp 播放:{{playListDeatils.totalplay}}</span>
                 </div>
                 <div class="introduction">
-                    <span>介绍:</span>
+                    <span>介绍:{{playListDeatils.introduction}}</span>
                     <div class="introduction_content"></div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                    prop="songName"
+                    prop="name"
                     label="音乐标题"
                     sortable
                     width="180">
@@ -107,6 +107,7 @@
 <script>
 import Comment from '../Common/Comment.vue';
 import Bus from '../Common/bus'
+import {getImgSrc} from '../Common/getSrc'
 export default {
     components:{
         Comment,
@@ -135,18 +136,7 @@ export default {
             singList:[],
             comment:[],
             activeName: 'first',
-            tableData: [{
-            songName: '2016-05-02',
-            singer: '王小虎',
-            album: '上海',
-            singTime: '普陀区',
-            collect:false},
-            {
-            songName: '2016-05-02',
-            singer: '王小虎',
-            album: '上海',
-            singTime: '普陀区',
-            collect:true},]
+            tableData: [],
         }
     },
     mounted(){
@@ -155,7 +145,11 @@ export default {
             this.isMine = this.$route.query.isAuthor;
             this.$axios.get(`SongListInfo/getSongListInfo?listId=${this.listId}`).then((res) => {
                 if(res.data.success){
-                    this.createdItemList = res.data.listid;
+                    this.playListDeatils = res.data.playListDeatils;
+                    this.playListDeatils.image = getImgSrc(res.data.playListDeatils.image)
+                    console.log(this.playListDeatils)
+                    console.log(getImgSrc(res.data.playListDeatils.image))
+                    this.tableData = res.data.songList;
                 }
             })
         }
@@ -200,7 +194,6 @@ export default {
     }
     .introduce_header{
         height: 180px;
-        border: black 1px solid;
         margin-top: 30px;
         margin-left: 30px;
     }
@@ -216,7 +209,6 @@ export default {
         float: left;
         width: 550px;
         height: 180px;
-        border: solid black 1px;
         padding-top: 1px;
         margin-left: 15px;
     }
