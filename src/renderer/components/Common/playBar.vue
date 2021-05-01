@@ -173,6 +173,7 @@ export default {
 			this.lrcId = 0; //歌词位置恢复
 			this.flag = 0;
 			this.processLyrics();
+			ipcRenderer.send('updateLyric',true) //歌词浮框更新歌词
 		},
 		nextMusic() {
 			console.log(this.getSongList)
@@ -194,6 +195,7 @@ export default {
 			this.flag = 0;
 			this.processLyrics();
 			console.log('2222222222222')
+			ipcRenderer.send('updateLyric',true) //歌词浮框更新歌词
 		},
 		collectSong(){
 			this.song.isCollect = !this.song.isCollect
@@ -242,16 +244,20 @@ export default {
 					// this.$axios.get(``).then((res) => {
 						
 					// })
-					this.currentSongSrc = getAudioSrc(this.getSongList[0].audio); //todo 这里直接删掉 ，改用请求过来的数据
+					this.currentSongSrc = getAudioSrc(this.getSongList[0].audio); 
+					this.song = this.getSongList[0]
+					localStorage.setItem('currentPlayId',this.song.id)
 					console.log(this.currentSongSrc);
 				} else if(this.playStyle === 'circle') {
 					this.$refs.audio.loop = true //设置单曲循环播放
 				} else if(this.playStyle === 'randon') {
 					this.currentSongSrc = getAudioSrc(this.getSongList[Math.ceil(Math.random()*this.getSongList.length-1)].audio)//向下取整
 					console.log(this.currentSongSrc);
+					
 				}
 				setTimeout(() => { 
 					this.$refs.audio.play()
+					ipcRenderer.send('updateLyric',true) //歌词浮框更新歌词
 				}, 150);
 				
 			})

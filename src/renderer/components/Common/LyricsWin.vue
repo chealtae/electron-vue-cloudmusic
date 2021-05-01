@@ -58,11 +58,15 @@ export default {
                 this.isplay = 'true'
                 console.log(localStorage.getItem('currentPlayId'))
             })
-            ipcRenderer.on('pauseMusicfromHome' ,(event,arg) => {
+            ipcRenderer.on('pauseMusicfromHome' ,() => {
                 this.isplay = 'false'
+            })
+            ipcRenderer.on('updateLyric' ,() => {
+                this.getLyric();
             })
         },
         processLyrics() {
+            this.lrcArray = [];
             let lrcGet = this.lyric;//提取歌词
             // console.log(lrcGet);
             let lrc = []
@@ -86,6 +90,7 @@ export default {
             
         },
         getLyric(){
+            this.lyric = '';
             this.$axios.get(`/SongInfo/getSong?songId=`+Number(localStorage.getItem('currentPlayId'))).then((res) => {
 		    	if(res.data.success){
 		    		this.lyric = res.data.song.lyric;

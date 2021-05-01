@@ -112,6 +112,16 @@ function currentlyrics() {
         }
     })
 }
+ // 更新歌词
+function updateLyric() {
+    ipcMain.on('updateLyric', () => {
+        let wins = BrowserWindow.getAllWindows();
+        if(wins[1]){
+            wins[1].webContents.send('updateLyric','true')
+        }
+    })
+}
+
 
 function closeLogin() {
     ipcMain.on('closeLogin',() => {
@@ -143,6 +153,8 @@ function createNewList() {
     })
 }
 
+
+
 //监听渲染进程的消息
 function ipcEventListener() {
     closeWindows()
@@ -161,6 +173,7 @@ function ipcEventListener() {
     userLogin()
     restart()
     createNewList()
+    updateLyric()
 }
 export {
     ipcEventListener,
