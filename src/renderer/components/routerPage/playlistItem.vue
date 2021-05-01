@@ -65,7 +65,7 @@
         </div>
         <div v-show="playListStatus === true" style="width:100%"> 
             <template>
-                <el-table :data="tableData" stripe style="width: 99%">
+                <el-table :data="tableData" stripe style="width: 99%" @row-dblclick="playSong">
                     <el-table-column type="index" ></el-table-column>
                     <el-table-column width="80">
                          <template slot-scope="scope">
@@ -78,7 +78,7 @@
                     prop="name"
                     label="音乐标题"
                     sortable
-                    width="180">
+                    width="180" >
                     </el-table-column>
                     <el-table-column
                     prop="singer"
@@ -140,6 +140,8 @@ export default {
         }
     },
     mounted(){
+        //首先要判断路由里 带过来的数据是否存在
+        //由于再次点击其他歌单不会刷新页面， 之后需要通过bus传过来的值改变页面
         if(this.$route.query){
             this.listId = this.$route.query.id;
             this.isMine = this.$route.query.isAuthor;
@@ -147,8 +149,6 @@ export default {
                 if(res.data.success){
                     this.playListDeatils = res.data.playListDeatils;
                     this.playListDeatils.image = getImgSrc(res.data.playListDeatils.image)
-                    console.log(this.playListDeatils)
-                    console.log(getImgSrc(res.data.playListDeatils.image))
                     this.tableData = res.data.songList;
                 }
             })
@@ -158,7 +158,25 @@ export default {
     methods: {
         handleClick(tab, event) {
             console.log(tab, event);
+        },
+        playSong(row){
+            //向播放列表界面 发送完整的列表数据  存store里下次打开数据会消失，所以放在storage里
+            localStorage.setItem('playlist',JSON.stringify(this.tableData))
+            localStorage.setItem('currentPlayId',row.id)
+            Bus.$emit('playFromList',row.id)//传递歌曲id
+            //向播放条 发送简化后的播放列表
+            let simpleList = [];
+            this.tableData.forEach((item) => {
+                simpleList.push(item.id);
+            })
+            let flag = simpleList.indexOf(row.id);
+            let temp = simpleList.slice(0,flag);
+            console.log(temp)
+            simpleList.splice(0,flag)
+            simpleList = simpleList.concat(temp)
+            console.log(simpleList)
 
+            
         },
         handleEdit(scope,row){
             console.log(row,scope)
