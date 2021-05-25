@@ -3,9 +3,9 @@
         <div :class="findMusicStatus? 'sider_title_1_click' : 'sider_title_1'" @click="findMusicClick">
             <span :class="findMusicStatus? 'title_span_click' :'title_span'">发现音乐</span>
         </div>
-        <div :class="musicVedioStatus? 'sider_title_2_click' : 'sider_title_2'" @click="musicVedioClick">
+        <!-- <div :class="musicVedioStatus? 'sider_title_2_click' : 'sider_title_2'" @click="musicVedioClick">
             <span :class="musicVedioStatus? 'title_span_click' :'title_span'">视频</span>
-        </div>
+        </div> -->
         <div :class="friendsCircleStatus? 'sider_title_2_click' : 'sider_title_2'" @click="friendsCircleClick">
             <span :class="friendsCircleStatus? 'title_span_click' :'title_span'">朋友</span>
         </div>
@@ -15,7 +15,7 @@
         <div class="sider_title_static">
             <span class="title_span_static">我的音乐</span>
         </div>
-        <div :class=" localMusicStatus? 'sider_title_3_click' : 'sider_title_3'" @click="localMusicClick">
+        <!-- <div :class=" localMusicStatus? 'sider_title_3_click' : 'sider_title_3'" @click="localMusicClick">
             <span :class="localMusicStatus? 'title_span_2_click' :'title_span_2'">本地音乐</span>
         </div>
         <div :class=" downloadStatus? 'sider_title_3_click' : 'sider_title_3'" @click="downloadClick">
@@ -26,7 +26,7 @@
         </div>
         <div :class=" radioStationStatus? 'sider_title_3_click' : 'sider_title_3'" @click="radioStationClick">
             <span :class="radioStationStatus? 'title_span_2_click' :'title_span_2'">我的电台</span>
-        </div>
+        </div> -->
         <div :class=" myCollectStatus? 'sider_title_3_click' : 'sider_title_3'" @click="myCollectClick">
             <span :class="myCollectStatus? 'title_span_2_click' :'title_span_2'">我的收藏</span>
         </div>
@@ -52,7 +52,7 @@
                         <slot >收藏的歌单</slot>
                     </div>
                 </template>
-                    <el-menu-item v-for="collectedItem in collectedItemList" :key="collectedItem.playListsId" @click="playlistClick(createdItem.id,false)">
+                    <el-menu-item v-for="collectedItem in collectedItemList" :key="collectedItem.playListsId" @click="playlistClick(collectedItem.id,false)">
                         <span class="sider_menu_item"  @contextmenu="rightClick($event,collectedItem.id,false)">
                             {{collectedItem.name}}
                         </span>
@@ -62,7 +62,7 @@
         <div v-show="menuVisible">
                 <ul id="menu" class="menu">
                     <li class="menu_item">播放</li>
-                    <li class="menu_item" >编辑歌单</li>
+                    <li class="menu_item" v-if="deleteFlag" @click="edit">编辑歌单</li>
                     <li class="menu_item" v-if="deleteFlag" @click="deleteList">删除歌单</li>
                     <li class="menu_item" v-else @click="cancelCollect">取消收藏</li>
                 </ul>
@@ -75,26 +75,8 @@ import Bus from '../Common/bus'
 export default {
     data() {
         return {
-            createdItemList:[
-                {
-                    playListsId: 1 ,
-                    playlistsName:'我喜欢的音乐'
-                },
-                {
-                    playListsId: 2 ,
-                    playlistsName:'适合运动的歌曲'
-                },
-            ],
-            collectedItemList:[
-                {
-                    playListsId: 1 ,
-                    playlistsName:'你会爱上这个流行华语歌单'
-                },
-                {
-                    playListsId: 2 ,
-                    playlistsName:'「欧美」 慵懒的嗓音在你耳边问你现在睡吗'
-                },
-            ],
+            createdItemList:[],
+            collectedItemList:[],
             findMusicStatus: true,
             musicVedioStatus: false,
             friendsCircleStatus : false,
@@ -124,6 +106,8 @@ export default {
             this.$axios.post(`SongListInfo/getCreateList`,userInfo).then((res) => {
                 if(res.data.success){
                     this.createdItemList = res.data.listid;
+                    localStorage.setItem("createList",JSON.stringify(this.createdItemList))//todo这里都应该放在store 通过mapgetter 获取
+                    
                 }
             })
             this.$axios.post(`SongListInfo/getCollectList`,userInfo).then((res) => {
@@ -133,18 +117,24 @@ export default {
             })
         }
         this.ipcListener();
+        this.BusListener();
     },
     methods: {
         cancelCollect() {
             let info ={
                 userId:Number(localStorage.getItem('userId')),
-                typeId:this.currentListId
+                typeId:this.currentListId,
+                collectType : 2,
             }
-            this.$axios.post(`Operation/cancelCollectList`,info).then((res) => {
+            this.$axios.post(`Operation/cancelCollect`,info).then((res) => {
                 if(res.data.success){
-                    this.$message.success("删除歌单成功")
+                    this.$message.success("取消收藏成功")
                     this.getCollectList();
+                } else {
+                    this.$message.error(res.data.message);
                 }
+            }).catch((err) => {
+                this.$message.error(err.data.message);
             })
         },
         deleteList(){
@@ -164,7 +154,7 @@ export default {
         rightClick(MouseEvent,id,flag) { // 鼠标右击触发事件
             this.menuVisible = false // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
             this.menuVisible = true  // 显示模态窗口，跳出自定义菜单栏
-
+            console.log(MouseEvent)
             this.deleteFlag = flag; //控制不同操作
 
             var menu = document.querySelector('#menu')
@@ -173,7 +163,7 @@ export default {
             menu.style.left = MouseEvent.clientX - 0 + 'px'
             menu.style.top = MouseEvent.clientY - 80 + 'px'
             this.currentListId = id;//存放当前点击的歌单id
-            
+            console.log(menu)
         },
         foo() { // 取消鼠标监听事件 菜单栏
             this.menuVisible = false
@@ -187,6 +177,17 @@ export default {
             ipcRenderer.on('createNewList',() => {
                 this.getSongList();
             })
+            ipcRenderer.on('userLogin',() => {
+                this.getSongList();
+                this.getCollectList()
+                //登录后也要触发刷新
+            })
+        },
+        BusListener(){
+            Bus.$on("refresh",(state)=>{
+                // console.log('2222222')
+                this.getCollectList();
+            })
         },
         getSongList(){
             let userInfo ={
@@ -196,6 +197,7 @@ export default {
             this.$axios.post(`SongListInfo/getCreateList`,userInfo).then((res) => {
                 if(res.data.success){
                     this.createdItemList = res.data.listid;
+                    localStorage.setItem("createList",JSON.stringify(this.createdItemList))
                 }
             })
         },
@@ -206,8 +208,17 @@ export default {
             this.$axios.post(`SongListInfo/getCollectList`,userInfo).then((res) => {
                 if(res.data.success){
                     this.collectedItemList = res.data.listid;
+                    
                 }
             })
+        },
+        edit(){
+          this.$router.push({
+              path:'/editList',
+              query:{
+                  listId:this.currentListId
+              }
+          } )  
         },
         findMusicClick(){
             this.isActived = 'findMusic';

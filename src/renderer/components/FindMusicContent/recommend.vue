@@ -14,27 +14,11 @@
                <span class="recommend_span" @click="linkToRecommend">推荐歌单</span>
             </div>
            <div class="recommend_playlist">
-               <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
+               <div class="recommend_playlist_item" v-for="item in playList" :key="item.id" @click="showList(item.id)">
                    <div class="item_img">
-                       <img :src="item.url" alt="" style="width:100% ; height:100%; border-radius:6px">
+                       <img :src="item.image" alt="" style="width:100% ; border-radius:6px">
                    </div>
-                   <div class="item_span">{{item.title}}</div>
-               </div>
-           </div>
-           <div class="recommend_playlist">
-               <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
-                   <div class="item_img">
-                       <img :src="item.url" alt="" style="width:100% ; height:100% ;border-radius:6px">
-                   </div>
-                   <div class="item_span">{{item.title}}</div>
-               </div>
-           </div>
-           <div class="recommend_playlist">
-               <div class="recommend_playlist_item" v-for="item in playlist" :key="item.id">
-                   <div class="item_img">
-                       <img :src="item.url" alt="" style="width:100% ; height:100% ;border-radius:6px">
-                   </div>
-                   <div class="item_span">{{item.title}}</div>
+                   <div class="item_span">{{item.name}}</div>
                </div>
            </div>
         </div>
@@ -43,6 +27,7 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+import {getImgSrc} from './../Common/getSrc'
 export default {
     data() {
         return {
@@ -72,33 +57,7 @@ export default {
                     id:6
                 }
             ],
-            playlist:[
-                {
-                    id:1,
-                    url:require("@/assets/img/img1.jpg"),
-                    title:'[华语私人订制] 最懂你的华语推荐 每日更新35首'
-                },
-                {
-                    id:2,
-                    url:require("@/assets/img/img1.jpg"),
-                    title:'神仙翻唱:每首都是神仙级的Cover'
-                },
-                {
-                    id:3,
-                    url:require("@/assets/img/img1.jpg"),
-                    title:'神仙翻唱:每首都是神仙级的Cover'
-                },
-                {
-                    id:4,
-                    url:require("@/assets/img/img1.jpg"),
-                    title:'神仙翻唱:每首都是神仙级的Cover'
-                },
-                {
-                    id:5,
-                    url:require("@/assets/img/img1.jpg"),
-                    title:'神仙翻唱:每首都是神仙级的Cover'
-                },
-            ]
+            playList:[],   
         }
     },
     methods: {
@@ -106,11 +65,35 @@ export default {
         linkToRecommend() {
             this.$router.push('/playList')
             this.setActived('playList')
+        },
+        getRecommend(){
+            this.$axios.get(`/SongListInfo/getRecommendList`).then((res) => {
+                if(res.data.success){
+                    this.playList = res.data.songList
+                   
+                    this.playList.map((item) => {
+                        item.image = getImgSrc(item.image)
+                        return item
+                    })
+                }
+            })
+        },
+        showList(id){
+            this.$router.push({
+                path:"/playlistItem",
+                query:{
+                    id:id
+                }
+
+            })
         }
+    },
+    mounted(){
+        this.getRecommend();
     }
 }
 </script>
-<style >
+<style scoped>
     .recommend_main{
         height: 100%;
         overflow: scroll;
@@ -154,15 +137,23 @@ export default {
     }
     .recommend_playlist{
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         margin-bottom: 20px;
         margin-top: 13px;
     }
     .recommend_playlist_item{
         width: 18%;
+        cursor: pointer;
+        margin-bottom: 10px;
     }
     .item_img{
         border-radius: 8px;
+        height: 0px;
+        width: 100%;
+        padding-bottom: 100%;
+        position: relative;
+        overflow: hidden;
     }
     .item_span{
         font-size: 14px;

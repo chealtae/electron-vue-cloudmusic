@@ -92,7 +92,7 @@ export default {
 	async mounted() {
 		//加载需要判断当前是否有音乐在storage里 有的话要默认赋值
 		await this.checkLastPlay();
-		console.log(this.song)
+		// console.log(this.song)
 		this.endListener();//相关监听
 		
 		this.renderListener();
@@ -103,6 +103,8 @@ export default {
 		this.$refs.audio.volume  = this.volumeMoveX/50 //设置默认音量
 		//时间监听会涉及歌词显示 所以要在后面 应为歌词需要预处理 
 		this.watchTime();
+
+		localStorage.setItem('isplay',false)//每次打开时初始播放状态为false ，防止上次不正常退出引起状态异常
 		
 	},
 	computed: {
@@ -219,6 +221,7 @@ export default {
 			//监听播放消息后 1，需要播放当前歌曲 2.获取当前歌曲歌词 3.获取当前播放列表
 			//播放列表更新入口只有这一个
 			Bus.$on('playFromList', (state) =>{
+				this.getSongList = JSON.parse(localStorage.getItem('playlist')) //更新播放列表
                 this.$axios.get(`/SongInfo/getSong?songId=`+state).then((res) => {
 					if(res.data.success){
 						console.log(res.data.song.audio)
@@ -271,7 +274,12 @@ export default {
 				let timeDisplay2 = Math.floor(this.$refs.audio.duration)
 				this.processMoveX = timeDisplay/timeDisplay2 * 400
 				this.currentTime = this.processTime(timeDisplay)
-				this.musicTime = this.processTime(timeDisplay2)
+				if(isNaN(timeDisplay2)){ //获取不到时间时会显示NaN 
+					this.musicTime = "00:00"
+				} else {
+					this.musicTime = this.processTime(timeDisplay2)
+				}
+				
 
 				//处理歌词
 				if(this.lrcArray[this.lrcId].t < timeDisplay && this.lrcArray[this.lrcId+1].t > timeDisplay){
@@ -341,7 +349,11 @@ export default {
 			// this.$router.push('/playDetails')
 			this.$emit('isShowDetails',true)
 			Bus.$emit('playState',this.isplay) 
-			Bus.$emit('songInfo',this.song)
+			//打开播放详情后，是用v-if 控制的，页面需要创建时间，所以要延迟时间传递消息
+			setTimeout(() => {
+				Bus.$emit('songInfo',this.song)
+			}, 150);
+			
 		},
 		//向歌词界面传送更新后的信息
 		updateDetails(){
@@ -360,7 +372,7 @@ export default {
 		},
 		processLyrics() {
             let lrcGet = this.song.lyric;//提取歌词
-            console.log(lrcGet);
+            // console.log(lrcGet);
             let lrc = [];
             // console.log(lrc);
 			if(lrcGet){
@@ -414,7 +426,7 @@ export default {
 	}
 }
 </script>
-<style>
+<style scoped>
     *{
 		margin: 0;
 		padding: 0;

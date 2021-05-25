@@ -34,7 +34,7 @@
             
         </div>
         <div style="width:1000px;margin:0 auto;margin-top:20px">
-            <comment></comment>
+            <!-- <comment></comment> -->
         </div>
     </div>
     
@@ -47,7 +47,7 @@ export default {
   components: { Comment },
     data() {
         return {
-            playState:'paused',//paused or running
+            playState: localStorage.getItem('isplay') == 'true' ? 'running':'paused',//paused or running
             isCollect:false,
             lrcArray : [],//新建数组,用于存放歌词
             currentLrc: 0,
@@ -83,6 +83,7 @@ export default {
                 this.currentLrc = state
             })
             Bus.$on('songInfo',(state) => {
+                console.log(state)
                 this.song.name = state.name;
                 this.song.singer = state.singer;
                 this.song.isCollect = state.isCollect;

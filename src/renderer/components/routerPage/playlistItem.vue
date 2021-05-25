@@ -17,10 +17,10 @@
                         </span>
                     </div>
                 </div>
-                <div class="author">
-                    <img :src="playListDeatils.url" alt="" class="author_img">
-                    <span class="author_span">
-                        {{playListDeatils.author}}
+                <div class="author" style="height:25px">
+                    <img :src="playListDeatils.image" alt="" class="author_img">
+                    <span class="author_span" @click="showAuthor">
+                        {{playListDeatils.nickname}}
                     </span>
                     <span class="createTime_span">  
                         {{playListDeatils.createtime}}
@@ -29,10 +29,10 @@
                 <div class="opreation">
                     <el-row>
                         <el-button type="primary" size="small" round icon="el-icon-caret-right">播放全部</el-button>
-                        <el-button v-if="isCollect"  size="small" round icon="l-icon-folder-checked">已收藏({{playListDeatils.totalcollect}})</el-button>
-                        <el-button v-else round size="small" icon="el-icon-folder-add" :disabled="isMine">收藏({{playListDeatils.totalcollect}})</el-button>
+                        <el-button v-if="isCollect"  size="small" round icon="l-icon-folder-checked" @click="cancelCollect">已收藏({{playListDeatils.totalcollect}})</el-button>
+                        <el-button v-else round size="small" icon="el-icon-folder-add" :disabled="isMine" @click="collect">收藏({{playListDeatils.totalcollect}})</el-button>
                         <el-button round size="small" icon="el-icon-share">分享({{playListDeatils.totalshare}})</el-button>
-                        <el-button round size="small" icon="el-icon-download">全部下载</el-button>
+                        <!-- <el-button round size="small" icon="el-icon-download">全部下载</el-button> -->
                     </el-row>
                 </div>
                 <div class="label">
@@ -65,15 +65,15 @@
         </div>
         <div v-show="playListStatus === true" style="width:100%"> 
             <template>
-                <el-table :data="tableData" stripe style="width: 99%" @row-dblclick="playSong">
+                <el-table :data="tableData" stripe style="width: 99%" @row-dblclick="playSong" @row-contextmenu="rightClick">
                     <el-table-column type="index" ></el-table-column>
-                    <el-table-column width="80">
+                    <!-- <el-table-column width="80">
                          <template slot-scope="scope">
                             <i class="el-icon-star-on" v-if="scope.row.collect" @click="handleEdit(scope.$index, scope.row)"></i>
                             <i class="el-icon-star-off" v-else @click="handleEdit(scope.$index, scope.row)"></i>
                             <i class="el-icon-download icon01" @click="handleDelete(scope.$index, scope.row)"></i>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column
                     prop="name"
                     label="音乐标题"
@@ -90,18 +90,26 @@
                     sortable
                     width="180">
                     </el-table-column>
-                    <el-table-column
+                    <!-- <el-table-column
                     prop="singTime"
                     label="时长"
                     sortable
                     width="180">
-                    </el-table-column>
+                    </el-table-column> -->
                 </el-table>
+                <div v-show="menuVisible">
+                    <ul id="menu3" class="menu3">
+                        <li class="menu_item" >播放</li>
+                        <li class="menu_item" @click="removeFromList">从歌单中移出</li>
+                        <li class="menu_item1" v-for="item in createList" :key="item.id" >收藏至:{{item.name}}</li>
+                    </ul>
+                </div>
             </template>
         </div>
-        <div v-show ="commentStatus === true">
-            <comment></comment>
+        <div v-if ="commentStatus === true">
+            <comment :commentInfo="commentInfo" :commentNumber="commentNumber"></comment>
         </div>
+        
     </div>
 </template>
 <script>
@@ -118,25 +126,29 @@ export default {
             commentStatus:false,
             listId:'',
             isMine:false,
-            isCollect:true,
-            commentNumber:7788,
+            isCollect:false, //默认不收藏
+            commentNumber:0,
             playListDeatils:{
-                url:require("@/assets/img/img1.jpg"),
-                type:'歌单',
-                name:'「欧美」 慵懒的嗓音在你耳边问你现在睡吗',
-                author: '周末回家睡懒觉',
-                createdTime: '2017-07-13',
-                singNumber:72,
-                playTimes:'22万',
-                introduce: '',
-                collectTime:44,
-                shareTime:55,
-                label:[{name:'欧美'},{name:'夜晚'}]
+                // url:require("@/assets/img/img1.jpg"),
+                // type:'歌单',
+                // name:'「欧美」 慵懒的嗓音在你耳边问你现在睡吗',
+                // author: '周末回家睡懒觉',
+                // createdTime: '2017-07-13',
+                // singNumber:72,
+                // playTimes:'22万',
+                // introduce: '',
+                // collectTime:44,
+                // shareTime:55,
+                // label:[{name:'欧美'},{name:'夜晚'}]
             },
             singList:[],
             comment:[],
             activeName: 'first',
             tableData: [],
+            commentInfo:{},
+            menuVisible: false,
+            createList:[],
+            currentSongId:'',
         }
     },
     mounted(){
@@ -144,16 +156,25 @@ export default {
         //由于再次点击其他歌单不会刷新页面， 之后需要通过bus传过来的值改变页面
         if(this.$route.query){
             this.listId = this.$route.query.id;
-            this.isMine = this.$route.query.isAuthor;
+            // this.isMine = this.$route.query.isAuthor;
             this.$axios.get(`SongListInfo/getSongListInfo?listId=${this.listId}`).then((res) => {
                 if(res.data.success){
                     this.playListDeatils = res.data.playListDeatils;
                     this.playListDeatils.image = getImgSrc(res.data.playListDeatils.image)
+                    this.playListDeatils.nickname = res.data.playListDeatils.userinfo.nickname
                     this.tableData = res.data.songList;
+                    this.isMine = this.playListDeatils.userid === Number(localStorage.getItem("userId"))
+                    console.log(this.isMine,this.playListDeatils.userid, Number(localStorage.getItem("userId")))
                 }
             })
-        }
+        } 
         this.busListener();
+        this.commentInfo.typeId = this.listId;
+        this.commentInfo.type = 2; // 由于组件是复用，需要传递评论的是哪一种类型 
+        //0 歌曲  1专辑 2歌单 3动态 4排行 todo 封装到js中
+
+        this.getCommentNumber()
+        this.judgeCollect();//判断歌单是否被收藏 
     },
     methods: {
         handleClick(tab, event) {
@@ -195,11 +216,114 @@ export default {
         busListener(){
             Bus.$on('playListItem', (state) =>{
                 this.listId = state.id;
-                this.isMine = state.isAuthor;
-            });
-        },
-        getDetails(id){
 
+                console.log(state)
+                this.getSongListInfo();
+            });
+            
+        },
+        getSongListInfo(){
+            this.$axios.get(`SongListInfo/getSongListInfo?listId=${this.listId}`).then((res) => {
+                if(res.data.success){
+                    this.playListDeatils = res.data.playListDeatils;
+                    this.playListDeatils.image = getImgSrc(res.data.playListDeatils.image)
+                    this.playListDeatils.nickname = res.data.playListDeatils.userinfo.nickname
+                    this.tableData = res.data.songList;
+                    this.isMine = this.playListDeatils.userid === Number(localStorage.getItem("userId"))
+                }
+            })
+        },
+        getCommentNumber(){
+            let info = {type : 2,typeId :Number(this.listId) }
+            this.$axios.post(`/Comment/getCommentNumber`,info).then((res) => {
+                if(res.data.success){
+                    this.commentNumber = res.data.commentNumber;
+                }
+            })
+        },
+        judgeCollect(){
+            let info = {
+                userId :Number(localStorage.getItem("userId")),
+                typeId :Number(this.listId),
+                collectType : 2,
+            }
+            this.$axios.post(`/Operation/judgeCollect`,info).then((res) => {
+                if(res.data.success){
+                    this.isCollect = true;  //后端查到数据库结果表示收藏
+                }
+            })
+        },
+        collect(){
+            let info = {
+                userId :Number(localStorage.getItem("userId")),
+                typeId :Number(this.listId),
+                collectType : 2,
+            }
+            this.$axios.post(`/Operation/collect`,info).then((res) => {
+                if(res.data.success){
+                    this.$message.success("收藏成功")
+                    this.isCollect = true;
+                    this.playListDeatils.totalcollect++;
+                    Bus.$emit("refresh",true)//侧边栏需要刷新
+                }
+            })
+
+           
+        },
+        cancelCollect(){
+            let info ={
+                userId:Number(localStorage.getItem('userId')),
+                typeId:Number(this.listId),
+                collectType : 2,
+            }
+            this.$axios.post(`Operation/cancelCollect`,info).then((res) => {
+                if(res.data.success){
+                    this.$message.success("取消收藏成功")
+                    this.isCollect = false;
+                    this.playListDeatils.totalcollect--;
+                    Bus.$emit("refresh",true)//侧边栏需要刷新
+                }
+            })
+        },
+        showAuthor(){
+            this.$router.push({
+                path:"/UserInfo",
+                query:{
+                    id:this.playListDeatils.userid
+                }
+            })
+        },
+        rightClick(row, column, event) { // 鼠标右击触发事件
+
+         console.log(event,event.clientX)
+            this.menuVisible = false // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
+            this.menuVisible = true  // 显示模态窗口，跳出自定义菜单栏
+
+            var menu = document.querySelector('.menu3')
+            console.log(menu)
+            document.addEventListener('click', this.foo) // 给整个document添加监听鼠标事件，点击任何位置执行foo方法
+            menu.style.display = "block";
+            menu.style.position = "fixed";
+            menu.style.left = event.clientX - 0 + 'px'
+            menu.style.top = event.clientY - 80 + 'px'
+     
+            this.createList = JSON.parse(localStorage.getItem("createList")) //每次右击的时候都要获取一下自己创建的歌单
+            this.currentSongId = row.id
+            
+        },
+        foo() { // 取消鼠标监听事件 菜单栏
+            this.menuVisible = false
+            document.removeEventListener('click', this.foo) // 要及时关掉监听，不关掉的是一个坑，不信你试试，虽然前台显示的时候没有啥毛病，加一个alert你就知道了
+        },
+        //移出单曲
+        removeFromList(){
+            let info = {id:Number(this.listId) ,songId:this.currentSongId}
+            this.$axios.post(`/SongList/removeFromList`,info).then(res => {
+                if(res.data.success){
+                    this.$message.success("移出成功")
+                    this.getSongListInfo();//刷新列表
+                }
+            })
         }
     }
 }
@@ -209,6 +333,8 @@ export default {
         display: flex;
         flex-direction: column;
         min-width: 780px;
+        height: 100%;
+        overflow: auto;
     }
     .introduce_header{
         height: 180px;
@@ -255,10 +381,12 @@ export default {
         border-radius: 50%;
         height: 20px;
         width: 20px;
+        float: left;
     }
     .author_span{
         color: cornflowerblue;
         cursor: pointer;
+        line-height: 21px;
     }
     .createTime_span{
 
@@ -285,6 +413,7 @@ export default {
      .submenu_item_click{
         height: 60px;
         cursor: pointer;
+        
     }
     .submenu_span{
         display: block;
@@ -313,5 +442,28 @@ export default {
         justify-content: space-around;
         width: 120px;
         margin-left: 30px;
+    }
+    .menu3 {
+        
+        width:240px;
+        position: fixed;
+        border-radius: 3px;
+        background-color: #f4f4f4;
+        z-index: 20;
+        text-align: left;
+        box-shadow: 1px 2px 6px 0px #c1baba;
+    }
+
+    .menu3 li:hover {
+        background-color: #1790ff;
+        color: white;
+        cursor: pointer;
+    }
+    .menu3 li{font-size:15px;
+    list-style: none}
+    .menu_item{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 </style>

@@ -8,10 +8,10 @@
             <span :class="playListStatus ? 'submenu_span_click':'submenu_span'">歌单</span>
             <div :class="playListStatus ? 'menuLine':''"></div>
         </div>
-        <div :class="radioStatus ? 'submenu_item_click':'submenu_item'" @click="radioClick">
+        <!-- <div :class="radioStatus ? 'submenu_item_click':'submenu_item'" @click="radioClick">
             <span :class="radioStatus ? 'submenu_span_click':'submenu_span'">主播电台</span>
             <div :class="radioStatus ? 'menuLine':''"></div>
-        </div>
+        </div> -->
         <div :class="rankStatus ? 'submenu_item_click':'submenu_item'" @click="rankClick">
             <span :class="rankStatus ? 'submenu_span_click':'submenu_span'">排行榜</span>
             <div :class="rankStatus ? 'menuLine':''"></div>
@@ -20,10 +20,10 @@
             <span :class="singerStatus ? 'submenu_span_click':'submenu_span'">歌手</span>
             <div :class="singerStatus ? 'menuLine':''"></div>
         </div>
-        <div :class="lastestMusicStatus ? 'submenu_item_click':'submenu_item'" @click="lastestMusicClick">
+        <!-- <div :class="lastestMusicStatus ? 'submenu_item_click':'submenu_item'" @click="lastestMusicClick">
             <span :class="lastestMusicStatus ? 'submenu_span_click':'submenu_span'">最新音乐</span>
             <div :class="lastestMusicStatus ? 'menuLine':''"></div>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>
@@ -37,11 +37,11 @@ export default {
             rankStatus: false,
             singerStatus: false,
             lastestMusicStatus: false,
-            // isActived: 'recommend'
+            isActived: 'recommend'
         }
     },
     methods: {
-        ...mapActions(['setActived']),
+
         changeStatus(){
             if(this.isActived === 'recommend'){
                 this.recommendStatus = true ;
@@ -88,16 +88,16 @@ export default {
             }
         },
         recommendClick(){
-            this.setActived('recommend')
-            // this.isActived = 'recommend';
+            // this.setActived('recommend')
+            this.isActived = 'recommend';
             console.log(this.isActived)
             this.changeStatus();
             this.$router.push('/recommend')
         },
         playListClick() {
-            this.setActived('playList')
+            // this.setActived('playList')
             console.log(this.isActived)
-            // this.isActived = 'playList'
+            this.isActived = 'playList'
             this.changeStatus();
             this.$router.push('/playList')
         },
@@ -122,16 +122,16 @@ export default {
             this.$router.push('/lastestMusic')
         }
     },
-    computed:{
-        ...mapGetters(['isActived'])
-    }
+    // computed:{
+    //     ...mapGetters(['isActived'])
+    // }
 }
 </script>
 <style >
     #subMenu{
         display: flex;
         justify-content: space-around;
-        width: 488px;
+        width: 388px;
         margin-left: 20px;
     }
     .submenu_item{

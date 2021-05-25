@@ -97,6 +97,31 @@ export default new Router({
           name: 'playlistItem',
           component: require('@/components/routerPage/playlistItem').default
         },
+        {
+          path: '/UserInfo',
+          name: 'UserInfo',
+          component: require('@/components/routerPage/UserInfo').default
+        },
+        {
+          path: '/editInfo',
+          name: 'editInfo',
+          component: require('@/components/routerPage/editInfo').default
+        },
+        {
+          path: '/searchResult',
+          name: 'searchResult',
+          component: require('@/components/routerPage/searchResult').default
+        },
+        {
+          path: '/singerInfo',
+          name: 'singerInfo',
+          component: require('@/components/routerPage/singerInfo').default
+        },
+        {
+          path: '/editList',
+          name: 'editList',
+          component: require('@/components/routerPage/editList').default
+        },
         
     ]
     },

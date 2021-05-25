@@ -2,15 +2,15 @@
     <div class="logoutContent">
         <div class="userInfomatioin">
             <div class="info_item">
-                <span class="info_span">2222</span><br>
+                <span class="info_span">{{otherInfo.shareNumber}}</span><br>
                 <span class="info_span">动态</span>
             </div>
             <div class="info_item">
-                <span class="info_span">2222</span><br>
+                <span class="info_span">{{otherInfo.followNumber}}</span><br>
                 <span class="info_span">关注</span>
             </div>
             <div class="info_item">
-                <span class="info_span">222</span><br>
+                <span class="info_span">{{otherInfo.fansNumber}}</span><br>
                 <span class="info_span">粉丝</span>
             </div>
         </div>
@@ -27,14 +27,27 @@ import { ipcRenderer } from 'electron'
 export default {
     data() {
         return{
-            
+            otherInfo:{fansNumber:'',followNumber:'',shareNumber:''},
+            userId:Number(localStorage.getItem("userId")),
         }
+    },
+    mounted() {
+        this.getOtherInfo();
     },
     methods:{
         logout(){
             localStorage.removeItem("userId")
             ipcRenderer.send("restart");
             //整个窗口刷新更数据
+        },
+        getOtherInfo(userId){
+            this.$axios.get(`/Operation/getOtherInfo?userId=`+this.userId).then((res) => {
+                if(res.data.success){
+                    this.otherInfo.shareNumber = res.data.shareNumber;
+                    this.otherInfo.fansNumber = res.data.fansNumber;
+                    this.otherInfo.followNumber = res.data.followNumber;
+                }
+            })
         }
     }
 }

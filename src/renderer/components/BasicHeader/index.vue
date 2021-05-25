@@ -1,32 +1,40 @@
 <template>
     <div id="top_bar" style="-webkit-app-region: drag;">
         <div id="top-bar-logo">
-            1111
+            <img src="../../assets/img/logo1.svg" alt="" class="logoImg">
+            <span class="playName">猪猪音乐</span>
         </div>
         <div id="top-bar-control">
-            1111
+            <img src="../../assets/img/goback.svg" title="后退" alt="" class="backItem" @click="goback">
         </div>
         <div id="top-bar-search">
-            111
+             <el-input
+                class="searchItem"
+                placeholder="搜索"
+                v-model="input1"
+                @keyup.enter.native="search"
+                style="margin-top: 10px; width: 165px;-webkit-app-region: no-drag; ">
+                <i slot="prefix" class="el-input__icon el-icon-search" @click="search"></i>
+            </el-input>
         </div>
         <div id="top_bar_meun">
             <div class="meun_item_1">
                 <!-- <userInfo></userInfo> -->
                 <img v-if="loginFlag ==='null'" src="../../assets/img/profilePhoto.svg" alt=""  style="float:left" @click="login">
-                <img v-else :src="user.profile" alt="" class="profile_photo">
+                <img v-else :src="user.profile" alt="" class="profile_photo" @click="showUserInfo">
                 <span v-if="loginFlag ==='null'" class="login_span"  @click="login">未登录</span>
                 <span v-else class="login_span" @click="showDetails">{{user.username}}</span>
             </div>
             <div class="meun_item">
                 <!-- <setting></setting> -->
-                <i class="el-icon-setting icon_style" ></i>
+                <!-- <i class="el-icon-setting icon_style" ></i> -->
             </div>
             <div class="meun_item">
                 <!-- <theme-setting></theme-setting> -->
             </div>
             <div class="meun_item">
                 <!-- <message></message> -->
-                <i class="el-icon-message icon_style" @click="createMessageWin"></i>
+                <!-- <i class="el-icon-message icon_style" @click="createMessageWin"></i> -->
             </div>
         </div>
         <div class="icon_Line_style"></div>
@@ -47,7 +55,8 @@ export default {
     data() {
         return {
             loginFlag:localStorage.getItem('userId')||'null',
-            user:{profile:'',userid:'',userType:'',username:''}
+            user:{profile:'',userid:'',userType:'',username:''},
+            input1:'',
         }
     },
     methods: {
@@ -69,15 +78,49 @@ export default {
         },
         showDetails() {
             Bus.$emit('userDetails',true)
+        },
+        showUserInfo() {
+            this.$router.push({
+                path:"/UserInfo",
+                query:{
+                    id:localStorage.getItem("userId")
+                    // id:1,
+                }
+            })
+        },
+        goback(){
+            //后退时需要获取当前的路由是否为首页，如果不是才可以后退
+            if(this.$route.name !== "recommend") {
+                this.$router.back();
+            }
+            
+            
+            console.log(this.$router.history.current)
+            
+        },
+        search(){
+            if(this.input1 != ''){
+                this.$router.push({
+                    path:"/searchResult",
+                    query:{
+                        input:this.input1,
+                    }
+                })
+                Bus.$emit("search",this.input1)
+            }
         }
     },
     mounted() {
+        console.log(this.$route)
         console.log(this.loginFlag)
         this.getInfo()
         ipcRenderer.on('userLogin',() => {
             this.loginFlag = Number(localStorage.getItem('userId'))
             this.getInfo()
             //登录后也要触发刷新
+        })
+        Bus.$on("update",(state) => {
+            this.getInfo();
         })
     }
 }
@@ -146,4 +189,27 @@ export default {
         margin-left: 30px;
         
     }
+    .playName{
+        font-size: 22px;
+        color: white;
+        line-height: 65px;
+    }
+    .logoImg{
+        padding: 15px 11px 0px 20px;
+        float: left;
+    }
+    .backItem{
+        padding: 20px 11px 0px 20px;
+        -webkit-app-region: no-drag;
+    }
+    .el-icon-search{
+        color: white;
+    }
+    .searchItem>>>.el-input__inner{
+        background:rgba(165, 166, 167, 0.41);
+        border-radius: 28px;
+    }
+    /* .el-input__inner >>> ::-webkit-input-placeholder {
+        color: #fff;
+    } */
 </style>

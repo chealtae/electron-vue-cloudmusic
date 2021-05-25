@@ -2,89 +2,141 @@
     <div class="sharePage">
         <div class="share_title">
             <span class="share_title_span" >动态</span>
-            <el-button type="primary" round icon="el-icon-plus" size="mini">写动态</el-button>
+            <el-button type="primary" round icon="el-icon-plus" size="mini" @click="writeShare">写动态</el-button>
         </div>
-        <div v-for="item in shareContent" :key="item.id" class="share_content">
-            <img :src="item.img" class="userImg">
-            <div style=" margin-left: 50px;">
-                <span class="userName_span" @click="pushToUser">{{item.userName}}</span>
-                <span class="share_span">发布动态</span>
-                <span class="shareTime">{{item.shareDate}}</span>
-                <div>
-                    <span class="share_span_1">{{item.shareContent}}</span>
-                    <div style="max-width:394px; max-height:393px">
-                        <div>
-                            <el-image v-for="imgItem in item.shareImg" :key="imgItem.url"
-                                style="width: 125px; height: 125px"
-                                :src="imgItem.url"
-                                :preview-src-list="srcList"
-                                :fit="fit"
-                                ></el-image>
+        <div v-infinite-scroll="load">
+            <div v-for="item in shareContent" :key="item.id" class="share_content">
+                <img :src="item.userimage" class="userImg">
+                <div style=" margin-left: 50px;">
+                    <span class="userName_span" @click="pushToUser">{{item.nickName}}</span>
+                    <span class="share_span">发布动态</span>
+                    <span class="shareTime">{{item.createtime}}</span>
+                    <div>
+                        <span class="share_span_1">{{item.content}}</span>
+                        <div style="max-width:394px; max-height:393px">
+                            <div>
+                                <el-image v-for="imgItem in item.shareimage" :key="imgItem.id"
+                                    style="width: 125px; height: 125px"
+                                    :src="imgItem.image"
+                                    :preview-src-list="[imgItem.image]"
+                                    :fit="fit"
+                                    ></el-image>
+                            </div>
                         </div>
                     </div>
+                    <div class="shareSing" v-if="item.musicid !== 0" @dblclick="playSong(item.musicid)">
+                        <img :src="item.songimage" class="shareSingImg">
+                        <span class="shareSing_span">{{item.musicname}}</span>
+                        <span class="shareSing_span_1">{{item.singer}}</span>
+                    </div>
+                    <div style="float:right;margin-top: 5px">
+                        <img class="good_icon" src="../../assets/img/good.svg" alt="">
+                        <span style="cursor: pointer; font-size:14px"></span>
+                        <el-divider direction="vertical"></el-divider>
+                        <i class="el-icon-chat-line-round" @click="showComment(item)"></i>
+                        <el-divider direction="vertical"></el-divider>
+                        <i class="el-icon-share"></i>
+                    </div>
+                    
                 </div>
-                <div class="shareSing">
-                    <img :src="item.singImg" class="shareSingImg">
-                    <span class="shareSing_span">{{item.singName}}</span>
-                    <span class="shareSing_span_1">{{item.singers}}</span>
+                <el-divider></el-divider>
+                <div v-if="item.showComment" >
+                    <comment :commentInfo="item.id"></comment>
                 </div>
-                <div style="float:right;margin-top: 5px">
-                    <img class="good_icon" src="../../assets/img/good.svg" alt="">
-                    <span style="cursor: pointer; font-size:14px">({{item.likeNumber}})</span>
-                    <el-divider direction="vertical"></el-divider>
-                    <i class="el-icon-chat-line-round" @click="showComment(item)">({{item.commentNumber}})</i>
-                    <el-divider direction="vertical"></el-divider>
-                    <i class="el-icon-share">({{item.shareNumber}})</i>
-                </div>
-                
-            </div>
-            <el-divider></el-divider>
-            <div v-if="item.showComment">
-                <comment :commentId="item.id"></comment>
             </div>
         </div>
+        
+        <el-dialog
+        v-if="dialogVisible"
+        :visible.sync="dialogVisible"
+        width="50%"
+        :before-close="handleClose">
+            <upload @closeMessage="close"></upload>
+        </el-dialog>
+
+        
     </div>
 </template>
 <script>
 import Comment from './Comment.vue'
+import Upload from './upload.vue'
+import Bus from '../Common/bus'
+import {getImgSrc} from './getSrc'
 export default {
     components:{
-        Comment
+        Comment,
+        Upload
 
     },
     data() {
         return {
-            shareContent:[{
-                id:1,
-                userId:1,
-                img:require("@/assets/img/img1.jpg"),
-                userName:'爱因斯飞毯',
-                shareDate:'3月4日14:00',
-                shareContent:"来之不易 才最珍惜",
-                shareImg:[{url:require("@/assets/img/img1.jpg")},{url:require("@/assets/img/banner1.jpg")}],
-                likeNumber:999,
-                commentNumber:999,
-                shareNumber:12,
-                singImg:require("@/assets/img/img1.jpg"),
-                singName:'下一段旅程',
-                singers:'杨和苏KeyNG/张杰',
-                showComment:false //后面获取数据后再加入
-            }],
+            shareContent:[],
+            dialogVisible: false,
             srcList: [
-            'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-            'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg',
-            '../../assets/img/img1.jpg'
+            
             ],
-            fit:'cover'
+            fit:'cover',
+            shareList:[],
+            count:0,
         }
 
     },
+    mounted(){
+        this.getShare();
+    },      
     methods:{
         pushToUser() {
             //this.$router.push()
         },
         showComment(item) {
             item.showComment = !item.showComment
+        },
+        writeShare(){
+            this.dialogVisible = true;
+        },
+        handleClose(done) {
+            this.dialogVisible = false;
+        },
+        close(data){
+            console.log(data)
+            this.dialogVisible = false;
+        },
+        getShare(){
+            let info ={
+                userId: Number(localStorage.getItem("userId")),
+                offset:this.count
+            }
+            this.$axios.post(`/Share/getShare`,info).then(res => {
+                if(res.data.success){
+                    // this.shareContent = res.data.shareList;
+                    this.shareList = res.data.shareList
+                    this.shareList.map(item => {
+                        item.userimage = getImgSrc(item.userimage)
+                        
+                        item.songimage = getImgSrc(item.songimage)
+                        
+                        item.shareimage.map(item1 => {
+                            item1.image = getImgSrc(item1.image)
+                            return item1
+                        }) 
+                        return item
+                    })
+                    this.shareList.forEach(item => {
+                        this.shareContent.push(item)
+                    })
+                    console.log(this.shareContent)
+                }
+            })
+        },
+        playSong(id){
+            
+            localStorage.setItem('currentPlayId',id)
+            Bus.$emit('playFromList',id)//传递歌曲id
+
+        },
+        load(){
+            this.count += 10
+            this.getShare();
         }
     }
 }
@@ -170,6 +222,6 @@ export default {
     .shareSing_span_1{
         display: block;
         font-size: 12px;
-        margin-left: 50px;
+        margin-left: 55px;
     }
 </style>
