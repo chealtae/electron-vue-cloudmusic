@@ -23,6 +23,8 @@ export default {
             lyric:'暂无歌词',
             lrcArray : [],//新建数组,用于存放歌词
             currentLrc: 0,
+            islyricUpdate:false,
+            userId:Number(localStorage.getItem("userId")) || -1
         }
     },
     mounted() {
@@ -52,7 +54,12 @@ export default {
         },
         renderListener() {
             ipcRenderer.on('currentlyrics' ,(event,arg) => {
-                this.currentLrc = arg
+                //如果不存在歌词 不更新
+                if(this.islyricUpdate){
+                    this.currentLrc = arg
+                    console.log(this.currentLrc)
+                }
+               
             })
             ipcRenderer.on('playMusicfromHome' ,() => {
                 this.isplay = 'true'
@@ -62,6 +69,7 @@ export default {
                 this.isplay = 'false'
             })
             ipcRenderer.on('updateLyric' ,() => {
+                console.log('updateLyric')
                 this.getLyric();
             })
         },
@@ -72,6 +80,7 @@ export default {
             let lrc = []
             // console.log(lrc);
             if(lrcGet){
+                this.islyricUpdate = true
                 lrc = lrcGet.split('\\n');
                 let i = 0
                 lrc.forEach((item) => {
@@ -86,12 +95,27 @@ export default {
                     });
                 })
                 console.log(this.lrcArray)
+            } else {
+                //如果没有歌词 显示暂无歌词
+                this.islyricUpdate = false;
+                this.currentLrc = 1;
+                console.log("暂无歌词")
+                this.lrcArray.push({
+                    t:1200,
+                    c:"暂无歌词",
+                    id:1
+                })
+                console.log(this.lrcArray)
             }
             
         },
         getLyric(){
             this.lyric = '';
-            this.$axios.get(`/SongInfo/getSong?songId=`+Number(localStorage.getItem('currentPlayId'))).then((res) => {
+            let info = {
+				songId:Number(localStorage.getItem('currentPlayId')),
+				userId:this.userId,
+			}
+            this.$axios.post(`/SongInfo/getSong?songId`,info).then((res) => {
 		    	if(res.data.success){
 		    		this.lyric = res.data.song.lyric;
                     this.processLyrics() //处理歌词

@@ -5,10 +5,10 @@
             <el-button type="primary" round icon="el-icon-plus" size="mini" @click="writeShare">写动态</el-button>
         </div>
         <div v-infinite-scroll="load">
-            <div v-for="item in shareContent" :key="item.id" class="share_content">
-                <img :src="item.userimage" class="userImg">
+            <div v-for="(item,index) in shareContent" :key="index" class="share_content">
+                <img :src="item.userimage" class="userImg" @click="go2UserInfo(item.userid)">
                 <div style=" margin-left: 50px;">
-                    <span class="userName_span" @click="pushToUser">{{item.nickName}}</span>
+                    <span class="userName_span" @click="go2UserInfo(item.userid)">{{item.nickName}}</span>
                     <span class="share_span">发布动态</span>
                     <span class="shareTime">{{item.createtime}}</span>
                     <div>
@@ -30,7 +30,10 @@
                         <span class="shareSing_span_1">{{item.singer}}</span>
                     </div>
                     <div style="float:right;margin-top: 5px">
-                        <img class="good_icon" src="../../assets/img/good.svg" alt="">
+                        <i class="el-icon-delete" v-if="userId == item.userid" @click="deleteShare(item.id)"></i>
+                        <el-divider v-if="userId == item.userid" direction="vertical"></el-divider>
+                        <img v-if="!item.isLike" class="good_icon" src="../../assets/img/good.svg" alt="" @click="like(item)">
+                        <img v-else class="good_icon" src="../../assets/img/good2.svg" alt="" @click="cancelLike(item)">
                         <span style="cursor: pointer; font-size:14px"></span>
                         <el-divider direction="vertical"></el-divider>
                         <i class="el-icon-chat-line-round" @click="showComment(item)"></i>
@@ -41,7 +44,7 @@
                 </div>
                 <el-divider></el-divider>
                 <div v-if="item.showComment" >
-                    <comment :commentInfo="item.id"></comment>
+                    <comment :commentItemId="item.id" :commentType="3"></comment>
                 </div>
             </div>
         </div>
@@ -78,6 +81,8 @@ export default {
             fit:'cover',
             shareList:[],
             count:0,
+            commentInfo:{type:3}, //0 歌曲  1专辑 2歌单 3动态 4排行
+            userId:Number(localStorage.getItem("userId"))
         }
 
     },
@@ -90,6 +95,8 @@ export default {
         },
         showComment(item) {
             item.showComment = !item.showComment
+            this.$forceUpdate(); //数据变更需要强制刷新
+            console.log(item.showComment);
         },
         writeShare(){
             this.dialogVisible = true;
@@ -100,6 +107,9 @@ export default {
         close(data){
             console.log(data)
             this.dialogVisible = false;
+            this.shareContent = [];
+            this.count = 0
+            this.getShare();
         },
         getShare(){
             let info ={
@@ -112,7 +122,7 @@ export default {
                     this.shareList = res.data.shareList
                     this.shareList.map(item => {
                         item.userimage = getImgSrc(item.userimage)
-                        
+                        item.showComment = false; // 获得数据时设置不显示评论
                         item.songimage = getImgSrc(item.songimage)
                         
                         item.shareimage.map(item1 => {
@@ -137,7 +147,50 @@ export default {
         load(){
             this.count += 10
             this.getShare();
+        },
+        go2UserInfo(id){
+            this.$router.push({
+                path:"/UserInfo",
+                query:{
+                    id:id,
+                }
+            })
+        },
+        like(item){
+            let info = {
+                userId:this.userId,
+                typeId :item.id,
+                collectType : 3
+            }
+            this.$axios.post(`/Operation/like`,info).then(res => {
+                if(res.data.success){
+                    item.isLike = !item.isLike;
+                }
+            })
+        },
+        cancelLike(item){
+            let info = {
+                userId:this.userId,
+                typeId :item.id,
+                collectType : 3
+            }
+            this.$axios.post(`/Operation/cancelLike`,info).then(res => {
+                if(res.data.success){
+                    item.isLike = !item.isLike;
+                }
+            })
+        },
+        deleteShare(id){
+            this.$axios.get(`/Share/deleteShare?id=`+id).then((res) => {
+                if(res.data.success){
+                    this.$message.success('删除成功');
+                    this.count = 0;
+                    this.shareContent = [];
+                    this.getShare();
+                }
+            })
         }
+
     }
 }
 </script>

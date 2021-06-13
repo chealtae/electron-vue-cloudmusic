@@ -4,11 +4,11 @@
             <div class="playAction">
                 <div class="songImg" :style="{'animation-play-state':`${playState}`}">
                     <img src="../../assets/img/song.png" alt="" class="itemborder">
-                    <img src="../../assets/img/img1.jpg" alt="" class="itemcenter">
+                    <img :src="song.image" alt="" class="itemcenter">
                 </div>
                 <div class="operaIcons">
-                    <img v-show="isCollect" src="../../assets/img/heart.svg" alt="" class="icons">
-                    <img v-show="!isCollect" src="../../assets/img/heart1.svg" alt="" class="icons">
+                    <img v-show="song.isCollect" src="../../assets/img/heart.svg" alt="" class="icons">
+                    <img v-show="!song.isCollect" src="../../assets/img/heart1.svg" alt="" class="icons">
                     <i class="el-icon-folder-add icons" ></i>
                     <i class="el-icon-edit-outline icons"></i>
                 </div>
@@ -89,7 +89,7 @@ export default {
                 this.song.isCollect = state.isCollect;
                 this.song.lyric = state.lyric; 
                 this.song.album = state.album;
-                
+                this.song.image = state.image;
                 this.processLyrics();
             })
         },
@@ -112,6 +112,14 @@ export default {
                     });
                 })
                 console.log(this.lrcArray)
+            } else {
+                //如果没有歌词 显示暂无歌词
+                console.log("暂无歌词")
+                this.lrcArray.push({
+                    t:1200,
+                    c:"暂无歌词"
+                })
+		
             }
         }
     }
@@ -172,6 +180,7 @@ export default {
         border-radius: 50%;
         top: 50px;
         left: 50px;
+        z-index: 10;
     }
     .operaIcons{
         display: flex;

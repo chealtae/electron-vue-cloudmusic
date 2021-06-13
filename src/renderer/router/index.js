@@ -122,7 +122,26 @@ export default new Router({
           name: 'editList',
           component: require('@/components/routerPage/editList').default
         },
-        
+        {
+          path: '/albumListItem',
+          name: 'albumListItem',
+          component: require('@/components/routerPage/albumListItem').default
+        },
+        {
+          path: '/fansDetail',
+          name: 'fansDetail',
+          component: require('@/components/routerPage/fansDetail').default
+        },
+        {
+          path: '/followDetail',
+          name: 'followDetail',
+          component: require('@/components/routerPage/followDetail').default
+        },
+        {
+          path: '/shareDetail',
+          name: 'shareDetail',
+          component: require('@/components/routerPage/shareDetail').default
+        },
     ]
     },
     {

@@ -1,10 +1,10 @@
 <template>
 	<div class="player">
 		<div class="songInfo" style="min-width:180px">
-			<img src="../../assets/img/img1.jpg" alt="" class="songImg" @click="showDetails">
+			<img :src="song.image" alt="" class="songImg" @click="showDetails">
 			<span class="info_span">{{song.name}}</span>
-			<img v-if="song.isCollect" src="../../assets/img/heart.svg" alt=""  class="heartImg" title="取消喜欢" @click="collectSong">
-			<img v-else src="../../assets/img/heart1.svg" alt=""  class="heartImg" title="喜欢" @click="cancelCollect">
+			<img v-if="song.isCollect" src="../../assets/img/heart.svg" alt=""  class="heartImg" title="取消喜欢" @click="cancelCollect(song.id)">
+			<img v-else src="../../assets/img/heart1.svg" alt=""  class="heartImg" title="喜欢" @click="collectSong(song.id)">
 			<br>
 			<span class="info_span">{{song.singer}}</span>
 		</div>
@@ -56,7 +56,7 @@
 					:style="{left:`${volumeOffsetWidth}px`}"></div>
 				</div>
 			</div>
-			<img  src="../../assets/img/playList.svg" alt="" class="operaIcon" >
+			<img  src="../../assets/img/playList.svg" alt="" class="operaIcon"  @click="showPlayList">
 		</div>
 		
 	</div>
@@ -86,13 +86,14 @@ export default {
 			lyric:'暂无歌词',
             lrcArray : [],//新建数组,用于存放歌词
 			lrcId:0,
-			flag:0
+			flag:0,
+			userId:Number(localStorage.getItem("userId")) || -1,
 			}
 	},
 	async mounted() {
 		//加载需要判断当前是否有音乐在storage里 有的话要默认赋值
 		await this.checkLastPlay();
-		// console.log(this.song)
+		
 		this.endListener();//相关监听
 		
 		this.renderListener();
@@ -102,6 +103,14 @@ export default {
 
 		this.$refs.audio.volume  = this.volumeMoveX/50 //设置默认音量
 		//时间监听会涉及歌词显示 所以要在后面 应为歌词需要预处理 
+
+		//歌曲播放时会有歌词时间，如果歌曲没有歌词 提前写入暂未歌词
+		if(this.lrcArray[0] == undefined){
+			this.lrcArray.push({
+                    t:1200,
+                    c:"暂无歌词"
+            })
+		}
 		this.watchTime();
 
 		localStorage.setItem('isplay',false)//每次打开时初始播放状态为false ，防止上次不正常退出引起状态异常
@@ -164,6 +173,7 @@ export default {
 			this.getSongList.unshift(playedSong) //把播放完的音乐移动到数组t头部
 			this.currentSongSrc = getAudioSrc(this.getSongList[0].audio); 
 			this.song = this.getSongList[0];
+			this.song.image = getImgSrc(this.song.image);
 			setTimeout(() => { //请求资源需要事件
 				this.$refs.audio.play()
 			}, 150);
@@ -183,6 +193,7 @@ export default {
 			this.getSongList.push(playedSong) //把播放完的音乐移动到数组尾部
 			this.currentSongSrc = getAudioSrc(this.getSongList[0].audio); 
 			this.song = this.getSongList[0];
+			this.song.image = getImgSrc(this.song.image);
 			console.log(11111,this.currentSongSrc)
 			setTimeout(() => { 
 				this.$refs.audio.play()
@@ -199,11 +210,25 @@ export default {
 			console.log('2222222222222')
 			ipcRenderer.send('updateLyric',true) //歌词浮框更新歌词
 		},
-		collectSong(){
-			this.song.isCollect = !this.song.isCollect
+		collectSong(id){
+			let info = {userId: this.userId ,collectType :0 ,typeId:id}
+			this.$axios.post(`/Operation/collect`,info).then(res => {
+				if (res.data.success){
+					this.song.isCollect = !this.song.isCollect;
+					this.updateDetails()
+				}
+				
+			})
 		},
-		cancelCollect() {
-			this.song.isCollect = !this.song.isCollect
+		cancelCollect(id) {
+			let info = {userId: this.userId ,collectType :0 ,typeId:id}
+			this.$axios.post(`/Operation/cancelCollect`,info).then(res => {
+				if (res.data.success){
+					this.song.isCollect = !this.song.isCollect;
+					this.updateDetails()
+				}
+			})
+			
 		},
 		changeStyle() {
 			if(this.playStyle === 'list'){
@@ -222,18 +247,23 @@ export default {
 			//播放列表更新入口只有这一个
 			Bus.$on('playFromList', (state) =>{
 				this.getSongList = JSON.parse(localStorage.getItem('playlist')) //更新播放列表
-                this.$axios.get(`/SongInfo/getSong?songId=`+state).then((res) => {
+				let info = {songId:Number(state),userId:this.userId}
+                this.$axios.post(`/SongInfo/getSong`,info).then((res) => {
 					if(res.data.success){
 						console.log(res.data.song.audio)
 						this.song = res.data.song;
+						this.song.image = getImgSrc(this.song.image);
+						console.log(this.song)
 						this.currentSongSrc = getAudioSrc(res.data.song.audio); 
 						this.lyric = res.data.song.lyric;
+						// console.log('...........',this.lyric)
 						this.processLyrics();//处理歌词
 						//获取资源也需要请求事件，所以需要延迟五百秒
 						setTimeout(() => {
 							this.playMusic();
 						}, 500);
-						
+						//播放新的音乐 歌词浮框 更新
+						ipcRenderer.send('updateLyric',true) 
 					}
 				})
             });
@@ -249,20 +279,28 @@ export default {
 					// })
 					this.currentSongSrc = getAudioSrc(this.getSongList[0].audio); 
 					this.song = this.getSongList[0]
+					this.song.image = getImgSrc(this.song.image);
 					localStorage.setItem('currentPlayId',this.song.id)
 					console.log(this.currentSongSrc);
 				} else if(this.playStyle === 'circle') {
 					this.$refs.audio.loop = true //设置单曲循环播放
 				} else if(this.playStyle === 'randon') {
-					this.currentSongSrc = getAudioSrc(this.getSongList[Math.ceil(Math.random()*this.getSongList.length-1)].audio)//向下取整
+
+					let num = Math.ceil(Math.random()*(this.getSongList.length-1))
+
+					this.song = this.getSongList[num];
+					this.song.image = getImgSrc(this.song.image);
+					this.currentSongSrc = getAudioSrc(this.getSongList[num].audio)//向下取整
 					console.log(this.currentSongSrc);
+					localStorage.setItem('currentPlayId',this.song.id)
 					
 				}
 				setTimeout(() => { 
 					this.$refs.audio.play()
+					// Bus.$emit('pauseMusic',true)
 					ipcRenderer.send('updateLyric',true) //歌词浮框更新歌词
 				}, 150);
-				
+				this.updateDetails() //自动结束后都要更新数据给播放详情
 			})
 		},
 		//监听时间变化
@@ -280,7 +318,8 @@ export default {
 					this.musicTime = this.processTime(timeDisplay2)
 				}
 				
-
+				
+				
 				//处理歌词
 				if(this.lrcArray[this.lrcId].t < timeDisplay && this.lrcArray[this.lrcId+1].t > timeDisplay){
 					// 发送当前歌词index
@@ -391,14 +430,23 @@ export default {
 			}
         },
 		async checkLastPlay(){
+			let info = {
+				songId:Number(localStorage.getItem('currentPlayId')),
+				userId:this.userId,
+			}
 			if(localStorage.getItem('currentPlayId')){
-				return this.$axios.get(`/SongInfo/getSong?songId=`+Number(localStorage.getItem('currentPlayId'))).then((res) => {
+				return this.$axios.post(`/SongInfo/getSong`,info).then((res) => {
 					if(res.data.success){
 						this.song = res.data.song;
+						this.song.image = getImgSrc(this.song.image);
 						this.currentSongSrc = getAudioSrc(res.data.song.audio); 
+						console.log(this.song)
 					}
 				})
 			}
+		},
+		showPlayList(){
+			this.$emit('isShowPlayList',true)
 		}
 	},
 	directives:{
@@ -433,9 +481,10 @@ export default {
 	}
 	.player{
 		display: flex;
-		height: 50px;
-		margin: 12px 14px;
+		height: 74px;
+		padding: 12px 14px;
 		justify-content: space-between;
+		background: white;
 	}
 	.songImg{
 		width: 50px;

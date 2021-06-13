@@ -5,15 +5,15 @@
             <span class="name_span">{{item.userName}}</span>
             <div class="userInfomatioin">
                 <div class="info_item">
-                    <span class="info_span">{{item.shareItemNumber}}</span><br>
+                    <span class="info_span">{{otherInfo.shareNumber}}</span><br>
                     <span class="info_span">动态</span>
                 </div>
                 <div class="info_item">
-                    <span class="info_span">{{item.followNmuber}}</span><br>
+                    <span class="info_span">{{otherInfo.followNumber}}</span><br>
                     <span class="info_span">关注</span>
                 </div>
                 <div class="info_item">
-                    <span class="info_span">{{item.fansNumber}}</span><br>
+                    <span class="info_span">{{otherInfo.fansNumber}}</span><br>
                     <span class="info_span">粉丝</span>
                 </div>
             </div>
@@ -33,7 +33,23 @@ export default {
     data() {
         return{
             userInfo:[{id:1,userImg:require("@/assets/img/img1.jpg"),userName:'简单生活c',shareItemNumber:0,followNmuber:9,fansNumber:10}],
-            recommendUser:[{id:1,userImg:require("@/assets/img/img1.jpg"),userName:'简单生活c',fansNumber:188}]
+            recommendUser:[{id:1,userImg:require("@/assets/img/img1.jpg"),userName:'简单生活c',fansNumber:188}],
+            userId:Number(localStorage.getItem('userId')),
+            otherInfo:{fansNumber:'',followNumber:'',shareNumber:''},
+        }
+    },
+    mounted(){
+        this.getOtherInfo();
+    },
+    methods:{
+        getOtherInfo(){
+            this.$axios.get(`/Operation/getOtherInfo?userId=`+this.userId).then((res) => {
+                if(res.data.success){
+                    this.otherInfo.shareNumber = res.data.shareNumber;
+                    this.otherInfo.fansNumber = res.data.fansNumber;
+                    this.otherInfo.followNumber = res.data.followNumber;
+                }
+            })
         }
     }
 }

@@ -36,10 +36,10 @@
                     </el-row>
                 </div>
                 <div class="label">
-                    <span class="label_span" style="float:left">标签</span>
-                    <div v-for="item in playListDeatils.label" :key="item.name" style="float:left" >
+                    <span class="label_span" style="float:left">标签:</span>
+                    <div v-for="(item,index) in tagRes" :key="item.name" style="float:left" >
                         <span class="label_span1" >{{item.name}}</span>
-                        <span>/</span>
+                        <span v-if="index !== tagRes.length-1">/</span>
                     </div>
                 </div>
                 <div class="playtimes">
@@ -101,13 +101,13 @@
                     <ul id="menu3" class="menu3">
                         <li class="menu_item" >播放</li>
                         <li class="menu_item" @click="removeFromList">从歌单中移出</li>
-                        <li class="menu_item1" v-for="item in createList" :key="item.id" >收藏至:{{item.name}}</li>
+                        <li class="menu_item1" v-for="item in createList" :key="item.id" @click="addToList(item.id)">收藏至:{{item.name}}</li>
                     </ul>
                 </div>
             </template>
         </div>
         <div v-if ="commentStatus === true">
-            <comment :commentInfo="commentInfo" :commentNumber="commentNumber"></comment>
+            <comment :commentItemId="commentItemId" :commentType="2" :commentNumber="commentNumber"></comment>
         </div>
         
     </div>
@@ -145,10 +145,13 @@ export default {
             comment:[],
             activeName: 'first',
             tableData: [],
-            commentInfo:{},
+            commentItemId:'',
             menuVisible: false,
             createList:[],
             currentSongId:'',
+            tagRes:'',
+            totalplayFlag:true,//播放量增加标志，
+            userId:Number(localStorage.getItem("userId"))|| -1, 
         }
     },
     mounted(){
@@ -157,20 +160,23 @@ export default {
         if(this.$route.query){
             this.listId = this.$route.query.id;
             // this.isMine = this.$route.query.isAuthor;
-            this.$axios.get(`SongListInfo/getSongListInfo?listId=${this.listId}`).then((res) => {
+            let info = {listId:Number(this.listId),userId:this.userId}
+            this.$axios.post(`SongListInfo/getSongListInfo`,info).then((res) => {
                 if(res.data.success){
                     this.playListDeatils = res.data.playListDeatils;
                     this.playListDeatils.image = getImgSrc(res.data.playListDeatils.image)
                     this.playListDeatils.nickname = res.data.playListDeatils.userinfo.nickname
                     this.tableData = res.data.songList;
+                    this.tagRes = res.data.tagRes;
                     this.isMine = this.playListDeatils.userid === Number(localStorage.getItem("userId"))
                     console.log(this.isMine,this.playListDeatils.userid, Number(localStorage.getItem("userId")))
                 }
             })
         } 
         this.busListener();
-        this.commentInfo.typeId = this.listId;
-        this.commentInfo.type = 2; // 由于组件是复用，需要传递评论的是哪一种类型 
+        this.commentItemId = this.listId;
+        console.log(this.commentItemId)
+        // this.commentInfo.type = 2; // 由于组件是复用，需要传递评论的是哪一种类型 
         //0 歌曲  1专辑 2歌单 3动态 4排行 todo 封装到js中
 
         this.getCommentNumber()
@@ -196,7 +202,13 @@ export default {
             simpleList.splice(0,flag)
             simpleList = simpleList.concat(temp)
             console.log(simpleList)
+            
 
+            //防止无限点击 可以一直增加播放量
+            if(this.totalplayFlag){
+                this.updateTotalPlay();
+                this.totalplayFlag = false
+            }
             
         },
         handleEdit(scope,row){
@@ -216,25 +228,31 @@ export default {
         busListener(){
             Bus.$on('playListItem', (state) =>{
                 this.listId = state.id;
-
+                this.commentItemId = this.listId;
                 console.log(state)
                 this.getSongListInfo();
+                this.getCommentNumber()
+                this.commentStatus=false;
+                this.playListStatus = true;
+                this.totalplayFlag = true;
             });
             
         },
         getSongListInfo(){
-            this.$axios.get(`SongListInfo/getSongListInfo?listId=${this.listId}`).then((res) => {
+            let info = {listId:Number(this.listId),userId:this.userId}
+            this.$axios.post(`SongListInfo/getSongListInfo`,info).then((res) => {
                 if(res.data.success){
                     this.playListDeatils = res.data.playListDeatils;
                     this.playListDeatils.image = getImgSrc(res.data.playListDeatils.image)
                     this.playListDeatils.nickname = res.data.playListDeatils.userinfo.nickname
                     this.tableData = res.data.songList;
+                    this.tagRes = res.data.tagRes;
                     this.isMine = this.playListDeatils.userid === Number(localStorage.getItem("userId"))
                 }
             })
         },
         getCommentNumber(){
-            let info = {type : 2,typeId :Number(this.listId) }
+            let info = {type : 2,typeId :Number(this.listId) }//0 歌曲 1 专辑 2 歌单 3动态 4歌手
             this.$axios.post(`/Comment/getCommentNumber`,info).then((res) => {
                 if(res.data.success){
                     this.commentNumber = res.data.commentNumber;
@@ -245,7 +263,7 @@ export default {
             let info = {
                 userId :Number(localStorage.getItem("userId")),
                 typeId :Number(this.listId),
-                collectType : 2,
+                collectType : 2,//0 歌曲 1 专辑 2 歌单 3动态 4歌手
             }
             this.$axios.post(`/Operation/judgeCollect`,info).then((res) => {
                 if(res.data.success){
@@ -257,7 +275,7 @@ export default {
             let info = {
                 userId :Number(localStorage.getItem("userId")),
                 typeId :Number(this.listId),
-                collectType : 2,
+                collectType : 2,//0 歌曲 1 专辑 2 歌单 3动态 4歌手
             }
             this.$axios.post(`/Operation/collect`,info).then((res) => {
                 if(res.data.success){
@@ -324,7 +342,23 @@ export default {
                     this.getSongListInfo();//刷新列表
                 }
             })
-        }
+        },
+        //播放后 歌单播放量增加
+        updateTotalPlay(){
+            this.$axios.get(`/SongListInfo/updateTotalPlay?listId=`+this.listId).then(res => {
+                if(res.data.success){
+                    this.playListDeatils.totalplay++;
+                }
+            })
+        },
+        addToList(id){
+            let info = {id:id ,songId:this.currentSongId}
+            this.$axios.post(`/SongList/addToList`,info).then(res => {
+                if(res.data.success){
+                    this.$message.success('添加成功')
+                }
+            })
+        },
     }
 }
 </script>
@@ -395,6 +429,7 @@ export default {
         max-height: 500px;
     }
     .label{
+        margin-top: 10px;
         overflow: hidden;
     }
     .el-icon-star-on{

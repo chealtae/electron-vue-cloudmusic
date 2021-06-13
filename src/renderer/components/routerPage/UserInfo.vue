@@ -11,17 +11,17 @@
                 </div>
                 <el-divider></el-divider>
                 <div class="fansInfo">
-                    <div class="info_item">
+                    <div class="info_item" @click="go2share">
                         <span class="info_span_1">{{otherInfo.shareNumber}}</span><br>
                         <span class="info_span">动态</span>
                     </div>
                     <el-divider direction="vertical"></el-divider>
-                    <div class="info_item">
+                    <div class="info_item" @click="go2follow">
                         <span class="info_span_1">{{otherInfo.followNumber}}</span><br>
                         <span class="info_span">关注</span>
                     </div>
                     <el-divider direction="vertical"></el-divider>
-                    <div class="info_item">
+                    <div class="info_item" @click="go2fans">
                         <span class="info_span_1">{{otherInfo.fansNumber}}</span><br>
                         <span class="info_span">粉丝</span>
                     </div>
@@ -38,7 +38,7 @@
         <div class="collectList">
             <span class="collectSpan">{{userInfo.nickname}}创建的歌单</span>
             <div class="collect_playlist">
-               <div class="collect_playlist_item" v-for="item in collectList" :key="item.id">
+               <div class="collect_playlist_item" v-for="item in collectList" :key="item.id" @click="go2PlayListItem(item.id)">
                    <div class="item_img">
                        <img :src="item.image" alt="" style="width:100% ; height:100%; border-radius:6px">
                    </div>
@@ -61,6 +61,7 @@ export default {
             collectList:[],
             isFollow:false,
             otherInfo:{fansNumber:'',followNumber:'',shareNumber:''},
+            currentId:  Number(this.$route.query.id),
         }
     },
     mounted() {
@@ -83,6 +84,7 @@ export default {
                     if(!this.userInfo.introduction){
                         this.introduction = '这个人很懒，什么都没有留下'
                     }
+                    this.userInfo.imageBackup = this.userInfo.image
                     this.userInfo.image = getImgSrc(res.data.userInfo.image);//个人头像和歌曲列表的图片都要处理
                     this.collectList = res.data.collectList;
                     this.collectList.map((item) => {
@@ -102,6 +104,7 @@ export default {
                     introduction: this.userInfo.introduction,
                     image:this.userInfo.image,
                     sex:this.userInfo.sex,
+                    imageBackup:this.userInfo.imageBackup,
                 }
             })
         },
@@ -149,6 +152,35 @@ export default {
                     this.otherInfo.followNumber = res.data.followNumber;
                 }
             })
+        },
+        go2PlayListItem(id){    
+            this.$router.push({
+                path:'/playListItem',
+                query:{
+                    id:this.currentId,
+                }
+            })
+        },
+        go2fans(){
+            this.$router.push({
+                path:'/fansDetail',
+                query:{
+                    id:this.currentId,
+                    number:this.otherInfo.fansNumber
+                }
+            })
+        },
+        go2follow(){
+            this.$router.push({
+                path:'/followDetail',
+                query:{
+                    id:this.currentId,
+                    number:this.otherInfo.followNumber
+                }
+            })
+        },
+        go2share(){
+            
         }
     }
 }
@@ -237,6 +269,7 @@ export default {
         max-width: 190px;
         margin-bottom: 20px;
         margin-right: 15px;
+        cursor: pointer;
     }
     .item_img{
         border-radius: 8px;

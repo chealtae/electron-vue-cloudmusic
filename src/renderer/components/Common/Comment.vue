@@ -16,7 +16,7 @@
             <el-button style="float:right;margin-top:5px" size="mini" round @click="comment">评论</el-button>
         </div>
         <div class="comment">
-            <span>精彩评论</span>
+            <span  v-if="commentType !== 3">精彩评论</span>
             <div class="topComment" v-for="item in commentItem" :key="item.id">
                     <img :src="item.image" alt="" class="author_img" style="cursor:pointer" @click="go2UserInfo(item.userId)">
                 <div class="comment_content">
@@ -29,13 +29,14 @@
                     <div  class="operation_line" style="margin-top:5px">
                         <span  class="comment_span_1">{{item.commentData}}</span>
                         <div  style="float:right">
-                            <span class="report_span" v-if="mineId !== item.userId">举报</span>
-                            <i class="el-icon-delete" v-else @click="deleteComment"></i>
+                            <span class="report_span" v-if="userId !== item.userId">举报</span>
+                            <i class="el-icon-delete" v-else @click="deleteComment(item.id)"></i>
                             <el-divider direction="vertical"></el-divider>
-                            <img class="good_icon" src="../../assets/img/good.svg" alt="">
+                            <img v-if="!item.isLike" class="good_icon" src="../../assets/img/good.svg" alt="" @click="like(item)">
+                            <img v-else class="good_icon" src="../../assets/img/good2.svg" alt="" @click="cancelLike(item)">
                             <span style="cursor: pointer; font-size:14px">{{item.totalLike}}</span>
                             <el-divider direction="vertical"></el-divider>
-                            <i class="el-icon-chat-line-round" @click="showDalog(item.commentId)"></i>
+                            <i class="el-icon-chat-line-round" @click="showDalog(item.id)"></i>
                             <el-divider direction="vertical"></el-divider>
                             <i class="el-icon-share"></i>
                         </div> 
@@ -45,7 +46,7 @@
             </div>
             
         </div>
-        <div style="width:210px;margin:10px auto">
+        <div style="width:210px;margin:10px auto" v-if="commentType !== 3">
             <el-pagination
                 background
                 layout="prev, pager, next"
@@ -67,7 +68,7 @@
                 prefix-icon="el-icon-search"
                 maxlength="130"
                 show-word-limit
-                v-model="reply">
+                v-model="replyContent">
             </el-input>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
@@ -79,31 +80,22 @@
 <script>
 import {getImgSrc} from '../Common/getSrc'
 export default {
-    props:['commentInfo','commentNumber'],
+    props:['commentItemId','commentType','commentNumber'],
     data() {
         return {
             textarea:'',
-            mineId:1,
-            commentItem:[{
-                userId:1,
-                img:require("@/assets/img/img1.jpg"),
-                authorName:'爱因斯飞毯',
-                commentContent:'20年前，我们一起降临到这个世界上，14年前，为了不让她受伤，大冬天被邻居家的大狗托在地上几十米，5年前，每天傻傻的看着她发呆，3年前，隔着电话吐槽她，2年前，视频里她对我说加拿大好危险，我对她说武汉下雨我腿好痛，她说还记得我那时候为了她受的伤，1年前，她对我说要结婚了。',
-                commentData:'2016年4月1日',
-                commentId:1,
-                likeNumber:7766
-            }],
+            commentItem:[],
             dialogVisible: false,
-            reply:'',
+            replyContent:'',
             parentId:'',//父级评论id
             currentPage1:1,
             pageSize:15,
-
+            userId:Number(localStorage.getItem("userId")) || -1
         }
     },
     mounted() {
-        console.log(this.commentInfo)
-        if(this.commentInfo){
+        console.log(this.commentItemId)
+        if(this.commentItemId){
             this.getComment()
         }
 
@@ -111,10 +103,11 @@ export default {
     methods: {
         getComment(){
             let info = {}
-            info.typeId =Number(this.commentInfo.typeId) ;
-            info.type = this.commentInfo.type;
+            info.typeId =Number(this.commentItemId) ;
+            info.type = this.commentType;
             info.size = this.pageSize;
             info.currentPage = this.currentPage1;
+            info.userId = this.userId;
             this.$axios.post(`/Comment/getComment`,info).then((res) => {
                 if(res.data.success){
                     this.commentItem = res.data.comment
@@ -130,14 +123,15 @@ export default {
         comment(){
             if(this.textarea !== '' ){
                 let info = {}
-                info.typeId = Number(this.commentInfo.typeId);
+                info.typeId = Number(this.commentItemId);
                 info.userId = Number(localStorage.getItem('userId'));
-                info.type = this.commentInfo.type;
+                info.type = this.commentType;
                 info.content = this.textarea;
                 this.$axios.post(`/Comment/addComment`,info).then((res) => {
                     if(res.data.success){
                         this.$message.success('评论成功')
                         this.textarea = ''
+                        this.getComment()//更新视图
                     }
                 }).catch((err) => {
                     this.$message.error('评论失败')
@@ -150,19 +144,21 @@ export default {
         showDalog(id){
             this.dialogVisible = true;
             this.parentId = id 
+            console.log(this.parentId ,id)
         },
         reply(){
-            if(this.reply !== ''){
+            if(this.replyContent !== ''){
                 let info = {}
-                info.typeId = Number(this.commentInfo.typeId);
+                info.typeId = Number(this.commentItemId);
                 info.userId = Number(localStorage.getItem('userId'));
-                info.type = this.commentInfo.type;
-                info.content = this.textarea;
+                info.type = this.commentType;
+                info.content = this.replyContent;
                 info.parentId = this.parentId;
-                this.$axios.post(``,info).then((res) => {
+                this.$axios.post(`/Comment/replyComment`,info).then((res) => {
                     if(res.data.success){
                         this.$message.success('回复成功');
                         this.dialogVisible = false;
+                        this.getComment();
                     }
                 }).catch((err) => {
                     this.$message.error('回复失败');
@@ -172,9 +168,10 @@ export default {
             
         },
         deleteComment(id){
-            this.$axios.get(``).then((res) => {
+            this.$axios.get(`/Comment/deleteComment?id=`+id).then((res) => {
                 if(res.data.success){
                     this.$message.success('删除成功');
+                    this.getComment();
                 }
             }).catch((err) => {
                 this.$message.error('删除失败');
@@ -194,7 +191,34 @@ export default {
                     id:id,
                 }
             })
-        }
+        },
+        cancelLike(item){
+            let info = {
+                userId:this.userId,
+                typeId :item.id,
+                collectType : 5
+            }
+            this.$axios.post(`/Operation/cancelLike`,info).then(res => {
+                if(res.data.success){
+                    item.isLike = !item.isLike;
+                    item.totalLike --;
+                }
+            })
+        },
+        like(item){
+            let info = {
+                userId:this.userId,
+                typeId :item.id,
+                collectType : 5
+            }
+            this.$axios.post(`/Operation/like`,info).then(res => {
+                if(res.data.success){
+                    item.isLike = !item.isLike;
+                    item.totalLike ++
+                }
+            })
+        },
+
     }
 }
 </script>

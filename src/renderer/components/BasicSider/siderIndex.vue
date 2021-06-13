@@ -9,9 +9,9 @@
         <div :class="friendsCircleStatus? 'sider_title_2_click' : 'sider_title_2'" @click="friendsCircleClick">
             <span :class="friendsCircleStatus? 'title_span_click' :'title_span'">朋友</span>
         </div>
-        <div :class="FMStatus? 'sider_title_2_click' : 'sider_title_2'" @click="FMClick">
+        <!-- <div :class="FMStatus? 'sider_title_2_click' : 'sider_title_2'" @click="FMClick">
             <span :class="FMStatus? 'title_span_click' :'title_span'">私人FM</span>
-        </div>
+        </div> -->
         <div class="sider_title_static">
             <span class="title_span_static">我的音乐</span>
         </div>
@@ -187,6 +187,10 @@ export default {
             Bus.$on("refresh",(state)=>{
                 // console.log('2222222')
                 this.getCollectList();
+            });
+            Bus.$on("editList",(state)=>{
+                //编辑歌单名称 时需要更新创建的歌单
+                this.getSongList();
             })
         },
         getSongList(){

@@ -57,7 +57,7 @@ export default {
                 region: this.$route.query.region,
                 introduction: this.$route.query.introduction,
                 sex:this.$route.query.sex,
-                image:this.$route.query.image
+                image:this.$route.query.imageBackup
             },
             imageUrl:this.$route.query.image,
             uploadRes:'',//上传成功后返回的图片名称

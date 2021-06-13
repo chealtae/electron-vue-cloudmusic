@@ -58,7 +58,7 @@
                 <el-tab-pane label="专辑" name="2" class="tips_span">
                     <span v-if="albumRes.length === 0" >暂无数据</span>
                     <template>
-                        <div class="singerItem" v-for="item in albumRes" :key="item.id">
+                        <div class="singerItem" v-for="item in albumRes" :key="item.id" @click="go2Album(item.id)" >
                             <img :src="item.image" alt="" class="imgItem">
                             <span class="userName">{{item.name}}</span>
                         </div>
@@ -67,7 +67,7 @@
                 <el-tab-pane label="歌单" name="3" class="tips_span">
                     <span v-if="ListRes.length === 0">暂无数据</span>
                     <template>
-                        <div class="singerItem"  v-for="item in ListRes" :key="item.id">
+                        <div class="singerItem"  v-for="item in ListRes" :key="item.id" @click="goList(item.id)">
                             <img :src="item.image" alt="" class="imgItem">
                             <span class="userName">{{item.name}}</span>
                         </div>
@@ -76,7 +76,7 @@
                 <el-tab-pane label="用户" name="4" class="tips_span">
                     <span v-if="userRes.length === 0">暂无数据</span>
                     <template>
-                        <div class="singerItem" v-for="item in userRes" :key="item.id">
+                        <div class="singerItem" v-for="item in userRes" :key="item.id" @click="go2userInfo(item.id)">
                             <img :src="item.image" alt="" class="imgItem">
                             <span class="userName">{{item.nickname}}</span>
                         </div>
@@ -226,6 +226,30 @@ export default {
         showSinger(id){
             this.$router.push({
                 path:"/singerInfo",
+                query:{
+                    id:id,
+                }
+            })
+        },
+        go2Album(id){
+            this.$router.push({
+                path:"/albumListItem",
+                query:{
+                    id:id,
+                }
+            })
+        },
+        go2userInfo(id){
+            this.$router.push({
+                path:"/UserInfo",
+                query:{
+                    id:id,
+                }
+            })
+        },
+        go2List(id){
+            this.$router.push({
+                path:"/playListItem",
                 query:{
                     id:id,
                 }

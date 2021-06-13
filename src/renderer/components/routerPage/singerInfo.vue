@@ -44,7 +44,7 @@
             <div class="collectList" v-else>
                 <span class="collectSpan">{{singerDeatils.name}}的专辑</span>
                 <div class="collect_playlist">
-                <div class="collect_playlist_item" v-for="item in albumList" :key="item.id">
+                <div class="collect_playlist_item" v-for="item in albumList" :key="item.id" @click="go2Album(item.id)">
                     <div class="item_img">
                         <img :src="item.image" alt="" style="width:100% ; height:100%; border-radius:6px">
                     </div>
@@ -88,12 +88,12 @@ export default {
             albumList:[],
             activeName: 'first',
             isCollect:false,
-            albumId:'',
+            singerId:'',
         }
     },
     mounted(){
         if(this.$route.query.id){
-            this.albumId = this.$route.query.id
+            this.singerId = this.$route.query.id
             this.getSingerInfo(this.$route.query.id);
         }
         this.judgeCollect()
@@ -123,8 +123,8 @@ export default {
         judgeCollect(){
             let info = {
                 userId :Number(localStorage.getItem("userId")),
-                typeId :Number(this.albumId),
-                collectType : 1,
+                typeId :Number(this.singerId),
+                collectType : 4,//0 歌曲 1 专辑 2 歌单 3动态 4歌手
             }
             this.$axios.post(`/Operation/judgeCollect`,info).then((res) => {
                 if(res.data.success){
@@ -135,8 +135,8 @@ export default {
         collect(){
             let info = {
                 userId :Number(localStorage.getItem("userId")),
-                typeId :Number(this.albumId),
-                collectType : 1,
+                typeId :Number(this.singerId),
+                collectType : 4,
             }
             this.$axios.post(`/Operation/collect`,info).then((res) => {
                 if(res.data.success){
@@ -150,8 +150,8 @@ export default {
         cancelCollect(){
             let info ={
                 userId:Number(localStorage.getItem('userId')),
-                typeId:Number(this.albumId),
-                collectType : 1,
+                typeId:Number(this.singerId),
+                collectType : 4,
             }
             this.$axios.post(`Operation/cancelCollect`,info).then((res) => {
                 if(res.data.success){
@@ -160,6 +160,14 @@ export default {
                 }
             })
         },
+        go2Album(id){
+            this.$router.push({
+                path:'/albumListItem',
+                query:{
+                    id:id,
+                }
+            })
+        }
     }
 }
 </script>
@@ -312,13 +320,15 @@ export default {
     .collect_playlist{
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
+        justify-content: flex-start;
         margin-bottom: 20px;
         margin-top: 13px;
     }
     .collect_playlist_item{
         width: 23%;
+        max-width: 190px;
         margin-bottom: 20px;
+        margin-right: 15px;
     }
     .item_img{
         border-radius: 8px;

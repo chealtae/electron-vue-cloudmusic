@@ -10,6 +10,16 @@
             <div id="userDeatils" v-show="showUser">
                 <logout @isShowUser="getMessage"></logout>
             </div>
+            <div v-if="showList" class="playList">
+                <span style="font-size:20px;margin-left : 15px ;line-height:40px" >
+                    播放列表
+                </span>
+                <div class="songList">
+                    <div v-for="item in playList" :key="item.id">
+                        <span class="song_span">{{item.name}}-{{item.singer}}</span>
+                    </div>
+                </div>
+            </div>
             <div id="pagecontent">
                 <router-view></router-view>     
             </div>
@@ -19,7 +29,7 @@
             <play-details @isShowDetails="getMessage"></play-details>
         </div>
         <div id="footer">
-            <play-bar @isShowDetails="getMessage"></play-bar>
+            <play-bar @isShowDetails="getMessage" @isShowPlayList ="getListMessage"></play-bar>
         </div>
         
     </div>
@@ -48,6 +58,8 @@ export default {
             dragVal:0,  //存放实时鼠标移动的距离
             showDetails:false,
             showUser:false,
+            showList:false,
+            playList:[],
         }
     },
     computed: {
@@ -107,6 +119,14 @@ export default {
             console.log(msg)
             this.showUser = msg;
             
+        },
+        getListMessage(msg){
+            // console.log(msg);
+            this.showList = !this.showList
+            if(this.showList) {
+                this.playList = JSON.parse(localStorage.getItem("playlist"))
+                console.log(this.playList)
+            }
         },
         busListener(){
             Bus.$on('userDetails', () =>{
@@ -171,5 +191,31 @@ export default {
     #userDeatils{
         position: fixed;
         z-index: 20;
+    }
+
+    .playList{
+        width: 300px;
+        background-color: white;
+        z-index: 100;
+        position: fixed;
+        right: 0px;
+        height: 548px;
+        max-height: 902px;
+        bottom: 74px;
+
+        /* top:63px ; */
+        overflow: a;
+    }
+
+    .song_span{
+        font-size: 14px;
+        line-height: 35px;
+        padding-left: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .songList > :nth-child(2n-1){
+        background-color:rgba(183, 179, 173, 0.23) ;
     }
 </style>
